@@ -4,51 +4,65 @@ use webp_animation::*;
 
 struct WebpEncoderFrame {
     frame_data: Vec<u8>,
-    duration: u16,
+    duration: Option<f64>,
 }
 
 pub struct WebpEncoder {
     width: u32,
     height: u32,
-    output_path: String,
     options: EncoderOptions,
+    frame_rate: u16,
     frames: Vec<WebpEncoderFrame>,
 }
 
 impl WebpEncoder {
-    pub fn new(
-        width: u32,
-        height: u32,
-        output_path: String,
-        options: Option<EncoderOptions>,
-    ) -> Self {
+    pub fn new(width: u32, height: u32, options: Option<EncoderOptions>) -> Self {
         WebpEncoder {
             width,
             height,
-            output_path,
             options: options.unwrap_or_else(EncoderOptions::default),
+            frame_rate: 30,
             frames: Vec::new(),
         }
     }
 
-    pub fn add_frame(&mut self, frame_data: Vec<u8>, duration: u16) -> Result<()> {
+    pub fn set_frame_rate(&mut self, frame_rate: u16) {
+        self.frame_rate = frame_rate;
+    }
+
+    pub fn add_frame(&mut self, frame_data: Vec<u8>, duration: Option<f64>) {
         self.frames.push(WebpEncoderFrame {
             frame_data,
             duration,
         });
-        Ok(())
     }
 
-    pub fn finish(&self, duration: u16) -> Result<()> {
+    pub fn get_buffer(&self) -> Result<Vec<u8>> {
         let mut encoder =
-            Encoder::new_with_options((self.width, self.height), self.options.to_owned()).unwrap();
+            Encoder::new_with_options((self.width, self.height), self.options.to_owned())
+                .map_err(EncoderError::EncoderError)?;
         let mut timestamp: i32 = 0;
         for frame in &self.frames {
-            encoder.add_frame(&frame.frame_data, timestamp).unwrap();
-            timestamp += frame.duration as i32;
+            encoder
+                .add_frame(&*frame.frame_data, timestamp)
+                .map_err(EncoderError::EncoderError)?;
+            timestamp += frame.duration.unwrap_or(1000. / (self.frame_rate as f64)) as i32;
         }
-        let webp_data = encoder.finalize(duration as i32).unwrap();
-        std::fs::write(&self.output_path, webp_data).unwrap();
+        Ok(encoder
+            .finalize(timestamp)
+            .map_err(EncoderError::EncoderError)?
+            .to_vec())
+    }
+
+    pub fn write_to_file(&self, path: String) -> Result<()> {
+        std::fs::write(
+            match path.ends_with(".webp") {
+                true => path,
+                false => format!("{}.webp", path),
+            },
+            self.get_buffer()?,
+        )
+        .map_err(EncoderError::WriteError)?;
         Ok(())
     }
 }
@@ -56,8 +70,8 @@ impl WebpEncoder {
 #[napi(object)]
 pub struct JsWebpEncoderOptions {
     pub lossless: Option<bool>,
-    pub quality: Option<i32>,
-    pub method: Option<u32>,
+    pub quality: Option<u8>,
+    pub method: Option<u8>,
     pub loop_count: Option<i32>,
 }
 
@@ -72,8 +86,7 @@ impl JsWebpEncoder {
     pub fn new(
         width: u32,
         height: u32,
-        output_path: String,
-        options: Option<JsWebpEncoderOptions>,
+        #[napi(ts_arg_type = "JsWebpEncoderOptions")] options: Option<JsWebpEncoderOptions>,
     ) -> Self {
         let options = options.map(|options| EncoderOptions {
             anim_params: AnimParams {
@@ -85,41 +98,50 @@ impl JsWebpEncoder {
                 } else {
                     webp_animation::EncodingType::Lossy(LossyEncodingConfig::default())
                 },
-                quality: if options.quality.is_some() {
-                    options.quality.unwrap_or(1) as f32
-                } else {
-                    Default::default()
-                },
-                method: if options.method.is_some() {
-                    options.method.unwrap_or(4) as usize
-                } else {
-                    Default::default()
-                },
+                quality: options.quality.unwrap_or(1) as f32,
+                method: options.method.unwrap_or(4) as usize,
             }),
             ..Default::default()
         });
         JsWebpEncoder {
-            encoder: WebpEncoder::new(width, height, output_path, options),
+            encoder: WebpEncoder::new(width, height, options),
         }
     }
 
     #[napi]
-    pub fn add_frame(&mut self, frame_data: Buffer, duration: u16) -> Result<()> {
+    pub fn set_frame_rate(&mut self, frame_rate: u16) {
+        self.encoder.set_frame_rate(frame_rate)
+    }
+
+    #[napi]
+    pub fn add_frame(
+        &mut self,
+        frame_data: Buffer,
+        #[napi(ts_arg_type = "number")] duration: Option<f64>,
+    ) {
         self.encoder.add_frame(frame_data.into(), duration)
     }
 
     #[napi]
-    pub fn finish(&self, duration: u16) -> Result<()> {
-        self.encoder.finish(duration)
+    pub fn get_buffer(&self) -> Result<Buffer> {
+        match self.encoder.get_buffer() {
+            Ok(data) => Ok(data.into()),
+            Err(err) => Err(err),
+        }
+    }
+
+    #[napi]
+    pub fn write_to_file(&self, path: String) -> Result<()> {
+        self.encoder.write_to_file(path)
     }
 }
 
 #[derive(thiserror::Error, Debug)]
 enum EncoderError {
-    #[error("The provided argument was too large")]
-    ArgumentTooLarge(#[from] std::num::TryFromIntError),
-    #[error("WebP encoder encountered an error")]
+    #[error("WebP encoder encountered an error: {0}")]
     EncoderError(#[from] webp_animation::Error),
+    #[error("Failed to write to file: {0}")]
+    WriteError(#[from] std::io::Error),
 }
 
 impl From<EncoderError> for napi::Error {

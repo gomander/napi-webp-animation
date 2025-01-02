@@ -11,7 +11,9 @@ export interface JsWebpEncoderOptions {
 }
 export type JsWebpEncoder = WebpEncoder
 export declare class WebpEncoder {
-  constructor(width: number, height: number, outputPath: string, options?: JsWebpEncoderOptions | undefined | null)
-  addFrame(frameData: Buffer, duration: number): void
-  finish(duration: number): void
+  constructor(width: number, height: number, options?: JsWebpEncoderOptions)
+  setFrameRate(frameRate: number): void
+  addFrame(frameData: Buffer, duration?: number): void
+  getBuffer(): Buffer
+  writeToFile(path: string): void
 }
