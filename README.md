@@ -12,31 +12,26 @@ npm install napi-webp-animation
 
 ## Support matrix
 
-### Operating Systems
+|                  | node18 | node20 | node22 |
+| ---------------- | ------ | ------ | ------ |
+| Windows x64      | ✓      | ✓      | ✓      |
+| Windows x32      | ✓      | ✓      | ✓      |
+| Windows arm64    | ✓      | ✓      | ✓      |
+| macOS x64        | ✓      | ✓      | ✓      |
+| macOS arm64      | ✓      | ✓      | ✓      |
+| Linux x64 gnu    | ✓      | ✓      | ✓      |
+| Linux x64 musl   | ✓      | ✓      | ✓      |
+| Linux arm gnu    | ✓      | ✓      | ✓      |
+| Linux arm64 gnu  | ✓      | ✓      | ✓      |
+| Linux arm64 musl | ✓      | ✓      | ✓      |
+| Android arm64    | ✓      | ✓      | ✓      |
+| Android armv7    | ✓      | ✓      | ✓      |
+| FreeBSD x64      | ✓      | ✓      | ✓      |
 
-| Linux x64/aarch64 | Windows x64 |
-| ----------------- | ----------- |
-| ✓                 | ✓           |
-
-### NodeJS
-
-Theoretically, any version of Node that supports N-API should work. The CI is
-validated against LTS versions of Node:
-
-| Node 18 | Node 20 | Node 22 |
-| ------- | ------- | ------- |
-| ✓       | ✓       | ✓       |
-
-### Building
-
-If you are using this as a dependency, since we use N-API, you don't
-need to build anything! However, if you want to tinker with this code
-or submit a PR, read below.
 
 ## Developing
 
-- Install latest `Rust`. Suggest using [rustup](https://rustup.rs/). If on
-  Windows, use WSL for an easier time.
+- Install latest [Rust](https://rustup.rs/). If on Windows, use WSL for an easier time.
 - Install `NodeJS@18+`. LTS versions suggested.
 - Install `pnpm` and dependencies with `pnpm i`.
 

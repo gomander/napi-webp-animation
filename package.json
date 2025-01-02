@@ -34,16 +34,14 @@
   "napi": {
     "name": "napi-webp-animation",
     "triples": {
-      "defaults": false,
       "additional": [
-        "x86_64-unknown-linux-gnu",
-        "x86_64-pc-windows-msvc",
-        "x86_64-unknown-linux-musl",
-        "aarch64-unknown-linux-gnu",
-        "armv7-unknown-linux-gnueabihf",
+        "aarch64-apple-darwin",
         "aarch64-linux-android",
+        "aarch64-unknown-linux-gnu",
         "aarch64-unknown-linux-musl",
         "aarch64-pc-windows-msvc",
+        "armv7-unknown-linux-gnueabihf",
+        "x86_64-unknown-linux-musl",
         "i686-pc-windows-msvc",
         "armv7-linux-androideabi"
       ]
@@ -64,8 +62,8 @@
     "version": "napi version"
   },
   "devDependencies": {
-    "@napi-rs/cli": "2.18.4",
-    "typescript": "~5.5.4"
+    "@napi-rs/cli": "^2.18.4",
+    "typescript": "^5.7.2"
   },
   "dependencies": {
     "@node-rs/helper": "^1.6.0"

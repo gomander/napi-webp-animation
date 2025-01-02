@@ -16,8 +16,8 @@ importers:
         specifier: 2.18.4
         version: 2.18.4
       typescript:
-        specifier: ~5.5.4
-        version: 5.5.4
+        specifier: ^5.7.2
+        version: 5.7.2
 
 packages:
 
@@ -32,8 +32,8 @@ packages:
   '@node-rs/helper@1.6.0':
     resolution: {integrity: sha512-2OTh/tokcLA1qom1zuCJm2gQzaZljCCbtX1YCrwRVd/toz7KxaDRFeLTAPwhs8m9hWgzrBn5rShRm6IaZofCPw==}
 
-  typescript@5.5.4:
-    resolution: {integrity: sha512-Mtq29sKDAEYP7aljRgtPOpTvOfbwRWlS6dPRzwjdE+C0R4brX/GUyhHSecbHMFLNBLcJIPt9nl9yG5TZ1weH+Q==}
+  typescript@5.7.2:
+    resolution: {integrity: sha512-i5t66RHxDvVN40HfDd1PsEThGNnlMCMT3jMUuoh9/0TaqWevNontacunWyN02LA9/fIbEWlcHZcgTKb9QoaLfg==}
     engines: {node: '>=14.17'}
     hasBin: true
 
@@ -47,4 +47,4 @@ snapshots:
     dependencies:
       '@napi-rs/triples': 1.2.0
 
-  typescript@5.5.4: {}
+  typescript@5.7.2: {}
