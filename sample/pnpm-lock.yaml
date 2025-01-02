@@ -8,11 +8,78 @@ importers:
 
   .:
     dependencies:
+      '@gomander/napi-gif-encoder':
+        specifier: ^0.0.8
+        version: 0.0.8
       '@napi-rs/canvas':
         specifier: ^0.1.65
         version: 0.1.65
 
 packages:
+
+  '@gomander/napi-gif-encoder-android-arm-eabi@0.0.8':
+    resolution: {integrity: sha512-+fZKT+R7s/BoIeAfruSWZWkKD8UTztuNZ9UWG/Py+d5z8AUOah56YXtrWQ4SfwHwV0P/f0WtkT0cWc5YTTFNRQ==}
+    engines: {node: '>= 18'}
+    cpu: [arm]
+    os: [android]
+
+  '@gomander/napi-gif-encoder-android-arm64@0.0.8':
+    resolution: {integrity: sha512-FcsJBlLqLMXBsXvGYkV6mY5bo9e+B4J9zOe/T05MsCfW0KEwDqtdZaYUlTIIOmIYFNJKrivPJbMur+5kr8SpLg==}
+    engines: {node: '>= 18'}
+    cpu: [arm64]
+    os: [android]
+
+  '@gomander/napi-gif-encoder-linux-arm-gnueabihf@0.0.8':
+    resolution: {integrity: sha512-nyg8OOsP/jDM7uNvdcxuPKrgzis9TBqZfSwQMHfYhKMrDTEAGKjoyRC6s5XKi2+jqMzsyS+yIapwYEtsDod1oA==}
+    engines: {node: '>= 18'}
+    cpu: [arm]
+    os: [linux]
+
+  '@gomander/napi-gif-encoder-linux-arm64-gnu@0.0.8':
+    resolution: {integrity: sha512-RCiruibvwd/4sEgd5t3cVkaQUXkOgqDs8WhRG6XzN93WmKiXxqX/DDThZMFvhflT+1CllF7yZOZSzdbnP8v7pg==}
+    engines: {node: '>= 18'}
+    cpu: [arm64]
+    os: [linux]
+
+  '@gomander/napi-gif-encoder-linux-arm64-musl@0.0.8':
+    resolution: {integrity: sha512-4DYU+QjH+N1yWHbvaKlmVDd8de4DIoYMXz7L6tIsgSwBknhbRnP/D9/d9ZZhWgzuit0+tbaqcygd+iEkfpcu9A==}
+    engines: {node: '>= 18'}
+    cpu: [arm64]
+    os: [linux]
+
+  '@gomander/napi-gif-encoder-linux-x64-gnu@0.0.8':
+    resolution: {integrity: sha512-ypMnCjyrT1thBLtn5RGUcoO3yLALN0HFO+e3HD+XPl63StJH00RNRYO78J8bteNpyMFBT/lCgyJAau0/4tuUHA==}
+    engines: {node: '>= 18'}
+    cpu: [x64]
+    os: [linux]
+
+  '@gomander/napi-gif-encoder-linux-x64-musl@0.0.8':
+    resolution: {integrity: sha512-nu19Jny3+JOAMalyIf05pF/V26Xe8KUD7Xev49C7xLNYZ6+JOsowPsyWR2J/FEybUj7VXghxWue7NYDiO9O+2w==}
+    engines: {node: '>= 18'}
+    cpu: [x64]
+    os: [linux]
+
+  '@gomander/napi-gif-encoder-win32-arm64-msvc@0.0.8':
+    resolution: {integrity: sha512-C/F0c3Ygfbb0qyPhewgyzW+RM+cfYxdnhX+4GDAt0In5rhrPv8SnFTmk7YbenOdpPH3yKlkfZHUzYVU9BNccpQ==}
+    engines: {node: '>= 18'}
+    cpu: [arm64]
+    os: [win32]
+
+  '@gomander/napi-gif-encoder-win32-ia32-msvc@0.0.8':
+    resolution: {integrity: sha512-Pnc0DoVeaX0RaDaiV3bNTsblnfneSgynXGQ9wOhSjGl8rtffAv/3Y9ll+RwUkNOpTKP+52pROI8YJHxvhyHqQg==}
+    engines: {node: '>= 18'}
+    cpu: [ia32]
+    os: [win32]
+
+  '@gomander/napi-gif-encoder-win32-x64-msvc@0.0.8':
+    resolution: {integrity: sha512-9m0iL2xc2pL6yi1eUnAw0Ic9QzO6jB+dd20SAgQU7Y5VPprJiVfM7gNtfkCtDZn8xTVJX2u7rgpXEr0bg81i+w==}
+    engines: {node: '>= 18'}
+    cpu: [x64]
+    os: [win32]
+
+  '@gomander/napi-gif-encoder@0.0.8':
+    resolution: {integrity: sha512-D2l4a5/HUMsUnSmDSxMcx6M2YNz1JkFKYCOYz3QQ8Y8m7mUa5vTsdg9XUMSRQpbKUF+qVYfd/vY7kMLbcbc3qA==}
+    engines: {node: '>= 18'}
 
   '@napi-rs/canvas-android-arm64@0.1.65':
     resolution: {integrity: sha512-ZYwqFYEKcT5Zr8lbiaJNJj/poLaeK2TncolY914r+gD2TJNeP7ZqvE7A2SX/1C9MB4E3DQEwm3YhL3WEf0x3MQ==}
@@ -78,7 +145,58 @@ packages:
     resolution: {integrity: sha512-YcFhXQcp+b2d38zFOJNbpyPHnIL7KAEkhJQ+UeeKI5IpE9B8Cpf/M6RiHPQXSsSqnYbrfFylnW49dyh2oeSblQ==}
     engines: {node: '>= 10'}
 
+  '@napi-rs/triples@1.2.0':
+    resolution: {integrity: sha512-HAPjR3bnCsdXBsATpDIP5WCrw0JcACwhhrwIAQhiR46n+jm+a2F8kBsfseAuWtSyQ+H3Yebt2k43B5dy+04yMA==}
+
+  '@node-rs/helper@1.6.0':
+    resolution: {integrity: sha512-2OTh/tokcLA1qom1zuCJm2gQzaZljCCbtX1YCrwRVd/toz7KxaDRFeLTAPwhs8m9hWgzrBn5rShRm6IaZofCPw==}
+
 snapshots:
+
+  '@gomander/napi-gif-encoder-android-arm-eabi@0.0.8':
+    optional: true
+
+  '@gomander/napi-gif-encoder-android-arm64@0.0.8':
+    optional: true
+
+  '@gomander/napi-gif-encoder-linux-arm-gnueabihf@0.0.8':
+    optional: true
+
+  '@gomander/napi-gif-encoder-linux-arm64-gnu@0.0.8':
+    optional: true
+
+  '@gomander/napi-gif-encoder-linux-arm64-musl@0.0.8':
+    optional: true
+
+  '@gomander/napi-gif-encoder-linux-x64-gnu@0.0.8':
+    optional: true
+
+  '@gomander/napi-gif-encoder-linux-x64-musl@0.0.8':
+    optional: true
+
+  '@gomander/napi-gif-encoder-win32-arm64-msvc@0.0.8':
+    optional: true
+
+  '@gomander/napi-gif-encoder-win32-ia32-msvc@0.0.8':
+    optional: true
+
+  '@gomander/napi-gif-encoder-win32-x64-msvc@0.0.8':
+    optional: true
+
+  '@gomander/napi-gif-encoder@0.0.8':
+    dependencies:
+      '@node-rs/helper': 1.6.0
+    optionalDependencies:
+      '@gomander/napi-gif-encoder-android-arm-eabi': 0.0.8
+      '@gomander/napi-gif-encoder-android-arm64': 0.0.8
+      '@gomander/napi-gif-encoder-linux-arm-gnueabihf': 0.0.8
+      '@gomander/napi-gif-encoder-linux-arm64-gnu': 0.0.8
+      '@gomander/napi-gif-encoder-linux-arm64-musl': 0.0.8
+      '@gomander/napi-gif-encoder-linux-x64-gnu': 0.0.8
+      '@gomander/napi-gif-encoder-linux-x64-musl': 0.0.8
+      '@gomander/napi-gif-encoder-win32-arm64-msvc': 0.0.8
+      '@gomander/napi-gif-encoder-win32-ia32-msvc': 0.0.8
+      '@gomander/napi-gif-encoder-win32-x64-msvc': 0.0.8
 
   '@napi-rs/canvas-android-arm64@0.1.65':
     optional: true
@@ -122,3 +240,9 @@ snapshots:
       '@napi-rs/canvas-linux-x64-gnu': 0.1.65
       '@napi-rs/canvas-linux-x64-musl': 0.1.65
       '@napi-rs/canvas-win32-x64-msvc': 0.1.65
+
+  '@napi-rs/triples@1.2.0': {}
+
+  '@node-rs/helper@1.6.0':
+    dependencies:
+      '@napi-rs/triples': 1.2.0

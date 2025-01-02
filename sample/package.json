@@ -5,6 +5,7 @@
   "type": "module",
   "private": true,
   "dependencies": {
+    "@gomander/napi-gif-encoder": "^0.0.8",
     "@napi-rs/canvas": "^0.1.65"
   }
 }
