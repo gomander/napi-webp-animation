@@ -1,10 +1,19 @@
-use bindgen_prelude::Buffer;
+use bindgen_prelude::{AsyncTask, Buffer};
 use napi::*;
-use webp_animation::*;
+use webp_animation::{AnimParams, Encoder, EncoderOptions, EncodingConfig, LossyEncodingConfig};
 
 struct WebpEncoderFrame {
     frame_data: Vec<u8>,
     duration: Option<f64>,
+}
+
+impl Clone for WebpEncoderFrame {
+    fn clone(&self) -> Self {
+        WebpEncoderFrame {
+            frame_data: self.frame_data.clone(),
+            duration: self.duration,
+        }
+    }
 }
 
 pub struct WebpEncoder {
@@ -78,6 +87,16 @@ impl WebpEncoder {
     pub fn set_options(&mut self, options: EncoderOptions) {
         self.options = options;
     }
+
+    pub fn clone(&self) -> Self {
+        WebpEncoder {
+            width: self.width,
+            height: self.height,
+            options: self.options.clone(),
+            frame_rate: self.frame_rate,
+            frames: self.frames.clone(),
+        }
+    }
 }
 
 #[napi(object)]
@@ -86,6 +105,43 @@ pub struct JsWebpEncoderOptions {
     pub quality: Option<u8>,
     pub method: Option<u8>,
     pub loop_count: Option<i32>,
+}
+
+pub struct AsyncGetBuffer {
+    encoder: WebpEncoder,
+}
+
+#[napi]
+impl Task for AsyncGetBuffer {
+    type Output = Vec<u8>;
+    type JsValue = Buffer;
+
+    fn compute(&mut self) -> Result<Self::Output> {
+        self.encoder.get_buffer()
+    }
+
+    fn resolve(&mut self, _: Env, output: Self::Output) -> Result<Self::JsValue> {
+        Ok(output.into())
+    }
+}
+
+pub struct AsyncWriteToFile {
+    encoder: WebpEncoder,
+    path: String,
+}
+
+#[napi]
+impl Task for AsyncWriteToFile {
+    type Output = ();
+    type JsValue = JsUndefined;
+
+    fn compute(&mut self) -> Result<Self::Output> {
+        self.encoder.write_to_file(self.path.clone())
+    }
+
+    fn resolve(&mut self, env: Env, _: Self::Output) -> Result<Self::JsValue> {
+        Ok(env.get_undefined()?)
+    }
 }
 
 #[napi(js_name = "WebpEncoder")]
@@ -136,15 +192,27 @@ impl JsWebpEncoder {
     }
 
     #[napi]
-    pub fn get_buffer(&self) -> Result<Buffer> {
-        match self.encoder.get_buffer() {
-            Ok(data) => Ok(data.into()),
-            Err(err) => Err(err),
-        }
+    pub fn get_buffer(&self) -> AsyncTask<AsyncGetBuffer> {
+        AsyncTask::new(AsyncGetBuffer {
+            encoder: self.encoder.clone(),
+        })
     }
 
     #[napi]
-    pub fn write_to_file(&self, path: String) -> Result<()> {
+    pub fn get_buffer_sync(&self) -> Result<Buffer> {
+        Ok(self.encoder.get_buffer()?.into())
+    }
+
+    #[napi]
+    pub fn write_to_file(&self, path: String) -> AsyncTask<AsyncWriteToFile> {
+        AsyncTask::new(AsyncWriteToFile {
+            encoder: self.encoder.clone(),
+            path,
+        })
+    }
+
+    #[napi]
+    pub fn write_to_file_sync(&self, path: String) -> Result<()> {
         self.encoder.write_to_file(path)
     }
 

@@ -4,7 +4,7 @@ import { WebpEncoder } from '../index.js'
 import { Canvas } from '@napi-rs/canvas'
 import { GIFEncoder } from '@gomander/napi-gif-encoder'
 
-function encodeWebp() {
+async function encodeWebp() {
   const canvas = new Canvas(100, 100)
   const ctx = canvas.getContext('2d')
 
@@ -28,7 +28,7 @@ function encodeWebp() {
 
   encoder.addFrame(canvas.data())
 
-  encoder.writeToFile('output.webp')
+  await encoder.writeToFile('output.webp')
   console.timeEnd('Encoding WebP')
 }
 
@@ -60,5 +60,9 @@ async function encodeGif() {
   console.timeEnd('Encoding GIF')
 }
 
-encodeWebp()
-encodeGif()
+async function main() {
+  await encodeWebp()
+  await encodeGif()
+}
+
+main()

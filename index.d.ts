@@ -14,8 +14,10 @@ export declare class WebpEncoder {
   constructor(width: number, height: number, options?: JsWebpEncoderOptions)
   setFrameRate(frameRate: number): void
   addFrame(frameData: Buffer, duration?: number): void
-  getBuffer(): Buffer
-  writeToFile(path: string): void
+  getBuffer(): Promise<Buffer>
+  getBufferSync(): Buffer
+  writeToFile(path: string): Promise<void>
+  writeToFileSync(path: string): void
   clearFrames(): void
   setDimensions(width: number, height: number): void
   setOptions(options: JsWebpEncoderOptions): void
