@@ -58,12 +58,25 @@ impl WebpEncoder {
         std::fs::write(
             match path.ends_with(".webp") {
                 true => path,
-                false => format!("{}.webp", path),
+                false => format!("{path}.webp"),
             },
             self.get_buffer()?,
         )
         .map_err(EncoderError::WriteError)?;
         Ok(())
+    }
+
+    pub fn clear_frames(&mut self) {
+        self.frames.clear();
+    }
+
+    pub fn set_dimensions(&mut self, width: u32, height: u32) {
+        self.width = width;
+        self.height = height;
+    }
+
+    pub fn set_options(&mut self, options: EncoderOptions) {
+        self.options = options;
     }
 }
 
@@ -90,7 +103,7 @@ impl JsWebpEncoder {
     ) -> Self {
         let options = options.map(|options| EncoderOptions {
             anim_params: AnimParams {
-                loop_count: options.loop_count.unwrap_or_default(),
+                loop_count: options.loop_count.unwrap_or(0),
             },
             encoding_config: Some(EncodingConfig {
                 encoding_type: if options.lossless.unwrap_or(true) {
@@ -133,6 +146,35 @@ impl JsWebpEncoder {
     #[napi]
     pub fn write_to_file(&self, path: String) -> Result<()> {
         self.encoder.write_to_file(path)
+    }
+
+    #[napi]
+    pub fn clear_frames(&mut self) {
+        self.encoder.clear_frames();
+    }
+
+    #[napi]
+    pub fn set_dimensions(&mut self, width: u32, height: u32) {
+        self.encoder.set_dimensions(width, height);
+    }
+
+    #[napi]
+    pub fn set_options(&mut self, options: JsWebpEncoderOptions) {
+        self.encoder.set_options(EncoderOptions {
+            anim_params: AnimParams {
+                loop_count: options.loop_count.unwrap_or(0),
+            },
+            encoding_config: Some(EncodingConfig {
+                encoding_type: if options.lossless.unwrap_or(true) {
+                    webp_animation::EncodingType::Lossless
+                } else {
+                    webp_animation::EncodingType::Lossy(LossyEncodingConfig::default())
+                },
+                quality: options.quality.unwrap_or(1) as f32,
+                method: options.method.unwrap_or(4) as usize,
+            }),
+            ..Default::default()
+        });
     }
 }
 

@@ -16,4 +16,7 @@ export declare class WebpEncoder {
   addFrame(frameData: Buffer, duration?: number): void
   getBuffer(): Buffer
   writeToFile(path: string): void
+  clearFrames(): void
+  setDimensions(width: number, height: number): void
+  setOptions(options: JsWebpEncoderOptions): void
 }
