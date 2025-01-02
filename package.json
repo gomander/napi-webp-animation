@@ -1,0 +1,75 @@
+{
+  "name": "napi-webp-animation",
+  "version": "0.0.1",
+  "description": "A WebP animation package for NodeJS using Rust",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./index.d.ts",
+        "default": "./index.js"
+      },
+      "require": {
+        "types": "./index.d.ts",
+        "default": "./index.js"
+      },
+      "default": "./index.js"
+    }
+  },
+  "main": "index.js",
+  "types": "index.d.ts",
+  "keywords": [
+    "napi",
+    "napi-rs",
+    "n-api",
+    "rust",
+    "node-addon",
+    "node-addon-api",
+    "webp",
+    "webp-animation"
+  ],
+  "files": [
+    "index.js",
+    "index.d.ts"
+  ],
+  "napi": {
+    "name": "napi-webp-animation",
+    "triples": {
+      "defaults": false,
+      "additional": [
+        "x86_64-unknown-linux-gnu",
+        "x86_64-pc-windows-msvc",
+        "x86_64-unknown-linux-musl",
+        "aarch64-unknown-linux-gnu",
+        "armv7-unknown-linux-gnueabihf",
+        "aarch64-linux-android",
+        "aarch64-unknown-linux-musl",
+        "aarch64-pc-windows-msvc",
+        "i686-pc-windows-msvc",
+        "armv7-linux-androideabi"
+      ]
+    }
+  },
+  "engines": {
+    "node": ">= 18"
+  },
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org/",
+    "access": "public"
+  },
+  "scripts": {
+    "artifacts": "napi artifacts",
+    "build": "napi build --platform --release",
+    "build:debug": "napi build --platform",
+    "prepublishOnly": "napi prepublish -t npm",
+    "version": "napi version"
+  },
+  "devDependencies": {
+    "@napi-rs/cli": "2.18.4",
+    "typescript": "~5.5.4"
+  },
+  "dependencies": {
+    "@node-rs/helper": "^1.6.0"
+  },
+  "author": "Gunnar Omander <gunnar@gomander.dev>",
+  "license": "MIT"
+}

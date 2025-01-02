@@ -1,0 +1,10 @@
+{
+  "name": "napi-webp-animation-sample",
+  "description": "Sample project for napi-webp-animation",
+  "version": "0.0.1",
+  "type": "module",
+  "private": true,
+  "dependencies": {
+    "@napi-rs/canvas": "^0.1.65"
+  }
+}
