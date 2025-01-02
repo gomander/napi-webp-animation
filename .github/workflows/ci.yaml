@@ -1,0 +1,228 @@
+name: CI
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+env:
+  DEBUG: 'napi:*'
+  MACOSX_DEPLOYMENT_TARGET: '10.13'
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        targets:
+          [
+            'x86_64-apple-darwin',
+            'aarch64-apple-darwin',
+            'x86_64-pc-windows-msvc',
+            'i686-pc-windows-msvc',
+            'aarch64-pc-windows-msvc',
+            'x86_64-unknown-linux-gnu',
+            'aarch64-unknown-linux-gnu',
+            'x86_64-unknown-linux-musl',
+            'aarch64-unknown-linux-musl',
+            'armv7-unknown-linux-gnueabihf',
+            'aarch64-linux-android',
+            'armv7-linux-androideabi',
+          ]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Cache cargo registry
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo
+            ${{ github.workspace }}/.xwin
+            ~/.napi-rs
+            ./target
+          key: ${{ matrix.targets }}-cargo-cache
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          toolchain: stable
+          targets: ${{ matrix.targets }}
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+      - name: Install Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - name: Install ziglang
+        uses: goto-bus-stop/setup-zig@v1
+        with:
+          version: 0.13.0
+      - name: Install cargo toolchains
+        uses: taiki-e/install-action@v2
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        with:
+          tool: cargo-zigbuild,cargo-xwin
+      - name: Install dependencies
+        run: pnpm install
+      - name: Build bindings
+        run: pnpm build --target ${{ matrix.targets }}
+        env:
+          XWIN_CACHE_DIR: ${{ github.workspace }}/.xwin
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: bindings-${{ matrix.targets }}
+          path: ./*.node
+          if-no-files-found: error
+  test-host:
+    strategy:
+      fail-fast: false
+      matrix:
+        settings:
+          - target: x86_64-apple-darwin
+            host: macos-latest
+          - target: aarch64-apple-darwin
+            host: macos-latest
+          - target: x86_64-pc-windows-msvc
+            host: windows-latest
+          - target: i686-pc-windows-msvc
+            host: windows-latest
+        node: [18, 20, 22]
+    runs-on: ${{ matrix.settings.host }}
+    needs:
+      - build
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+      - name: Install Node
+        uses: actions/setup-node@v4
+        if: matrix.settings.target != 'aarch64-apple-darwin'
+        with:
+          node-version: ${{ matrix.node }}
+          cache: pnpm
+          architecture: x64
+      - uses: actions/setup-node@v4
+        if: matrix.settings.target == 'aarch64-apple-darwin'
+        with:
+          node-version: ${{ matrix.node }}
+          cache: pnpm
+          architecture: arm64
+      - name: Setup node x86
+        if: matrix.settings.target == 'i686-pc-windows-msvc'
+        run: pnpm config set supportedArchitectures.cpu "ia32"
+        shell: bash
+      - name: Install dependencies
+        run: pnpm install
+      - name: Setup node x86
+        uses: actions/setup-node@v4
+        if: matrix.settings.target == 'i686-pc-windows-msvc'
+        with:
+          node-version: 22
+          cache: pnpm
+          architecture: x86
+      - name: Download bindings
+        uses: actions/download-artifact@v4
+        with:
+          name: bindings-${{ matrix.settings.target }}
+          path: ./
+      - name: Run tests
+        run: pnpm test
+  test-docker:
+    strategy:
+      fail-fast: false
+      matrix:
+        settings:
+          - target: x86_64-unknown-linux-gnu
+            docker: node:18-slim
+            args: ''
+          - target: aarch64-unknown-linux-gnu
+            docker: node:18-slim
+            args: '--platform linux/arm64'
+          - target: x86_64-unknown-linux-musl
+            docker: node:18-alpine
+            args: ''
+          - target: aarch64-unknown-linux-musl
+            docker: node:18-alpine
+            args: '--platform linux/arm64'
+          - target: armv7-unknown-linux-gnueabihf
+            docker: node:18-bullseye-slim
+            args: '--platform linux/arm/v7'
+    runs-on: ubuntu-latest
+    needs:
+      - build
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Install node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - name: Install dependencies
+        run: pnpm install
+      - name: Download bindings
+        uses: actions/download-artifact@v4
+        with:
+          name: bindings-${{ matrix.settings.target }}
+          path: ./
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+        with:
+          platforms: arm64,arm
+      - run: docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
+      - name: Run tests
+        uses: addnab/docker-run-action@v3
+        with:
+          image: ${{ matrix.settings.docker }}
+          options: ${{ matrix.settings.args }} -v ${{ github.workspace }}:/build -w /build
+          run: |
+            set -e
+            pnpm test
+  publish:
+    name: Publish
+    runs-on: ubuntu-latest
+    needs:
+      - build
+      - test-host
+      - test-docker
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+      - name: Install Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - name: Install dependencies
+        run: pnpm install
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+      - name: Move artifacts
+        run: pnpm artifacts
+      - name: List packages
+        run: ls -R npm
+        shell: bash
+      - name: Publish
+        run: |
+          if git log -1 --pretty=%B | grep "^[0-9]\+\.[0-9]\+\.[0-9]\+$";
+          then
+            echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" >> ~/.npmrc
+            npm publish --access public
+          elif git log -1 --pretty=%B | grep "^[0-9]\+\.[0-9]\+\.[0-9]\+";
+          then
+            echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" >> ~/.npmrc
+            npm publish --tag next --access public
+          else
+            echo "Not a release, skipping publish"
+          fi
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}

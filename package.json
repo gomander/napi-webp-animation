@@ -55,6 +55,7 @@
     "access": "public"
   },
   "scripts": {
+    "test": "echo \"TODO: write tests\"",
     "artifacts": "napi artifacts",
     "build": "napi build --platform --release",
     "build:debug": "napi build --platform",
