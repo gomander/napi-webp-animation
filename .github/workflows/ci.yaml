@@ -27,7 +27,6 @@ jobs:
             'aarch64-unknown-linux-musl',
             'armv7-unknown-linux-gnueabihf',
             'aarch64-linux-android',
-            'riscv64gc-unknown-linux-gnu',
             'aarch64-pc-windows-msvc',
           ]
     runs-on: ubuntu-latest
@@ -107,6 +106,15 @@ jobs:
               export MACOSX_DEPLOYMENT_TARGET='11.0'
               clang --version
               pnpm build --target aarch64-apple-darwin
+          - host: ubuntu-latest
+            target: 'riscv64gc-unknown-linux-gnu'
+            downloadTarget: 'riscv64gc-unknown-linux-gnu'
+            build: |
+              sudo apt-get update
+              sudo apt-get install gcc-riscv64-linux-gnu g++-riscv64-linux-gnu -y
+              export CC=riscv64-linux-gnu-gcc
+              export CXX=riscv64-linux-gnu-g++
+              pnpm build --target riscv64gc-unknown-linux-gnu
 
     name: stable - ${{ matrix.settings.target }} - node@20
     runs-on: ${{ matrix.settings.host }}
