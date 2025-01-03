@@ -61,7 +61,7 @@ jobs:
         run: cargo install cargo-xwin
       - name: Install llvm
         if: matrix.targets == 'x86_64-pc-windows-msvc' || matrix.targets == 'aarch64-pc-windows-msvc'
-        run: apt install -y llvm
+        run: sudo apt install -y llvm
       - name: Install dependencies
         run: pnpm install
       - name: Build bindings
