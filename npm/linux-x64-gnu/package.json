@@ -1,12 +1,28 @@
 {
   "name": "napi-webp-animation-linux-x64-gnu",
   "version": "0.0.1",
-  "os": ["linux"],
-  "cpu": ["x64"],
+  "os": [
+    "linux"
+  ],
+  "cpu": [
+    "x64"
+  ],
   "main": "napi-webp-animation.linux-x64-gnu.node",
-  "files": ["napi-webp-animation.linux-x64-gnu.node"],
+  "files": [
+    "napi-webp-animation.linux-x64-gnu.node"
+  ],
   "description": "A WebP animation package for NodeJS using Rust",
-  "keywords": ["napi", "napi-rs", "n-api", "rust", "node-addon", "node-addon-api", "webp", "webp-animation"],
+  "keywords": [
+    "napi",
+    "napi-rs",
+    "n-api",
+    "rust",
+    "node-addon",
+    "node-addon-api",
+    "webp",
+    "webp-animation"
+  ],
+  "author": "Gunnar Omander <gunnar@gomander.dev>",
   "license": "MIT",
   "engines": {
     "node": ">= 18"
@@ -14,5 +30,8 @@
   "publishConfig": {
     "registry": "https://registry.npmjs.org/",
     "access": "public"
-  }
+  },
+  "libc": [
+    "glibc"
+  ]
 }

@@ -1,15 +1,15 @@
 {
-  "name": "napi-webp-animation-android-arm-eabi",
+  "name": "napi-webp-animation-darwin-arm64",
   "version": "0.0.1",
   "os": [
-    "android"
+    "darwin"
   ],
   "cpu": [
-    "arm"
+    "arm64"
   ],
-  "main": "napi-webp-animation.android-arm-eabi.node",
+  "main": "napi-webp-animation.darwin-arm64.node",
   "files": [
-    "napi-webp-animation.android-arm-eabi.node"
+    "napi-webp-animation.darwin-arm64.node"
   ],
   "description": "A WebP animation package for NodeJS using Rust",
   "keywords": [
