@@ -1,68 +1,75 @@
 // @ts-check
 
 import { WebpEncoder } from '../index.js'
-import { Canvas } from '@napi-rs/canvas'
 import { GIFEncoder } from '@gomander/napi-gif-encoder'
+import { rgb, circleAndSquare } from './animations.js'
 
-async function encodeWebp() {
-  const canvas = new Canvas(100, 100)
-  const ctx = canvas.getContext('2d')
-
+async function webpRgb() {
+  const buffers = rgb()
   const encoder = new WebpEncoder(100, 100)
 
   encoder.setFrameRate(3)
 
-  console.time('Encoding WebP')
-  ctx.fillStyle = 'red'
-  ctx.fillRect(0, 0, 100, 100)
+  console.time('Encoding rgb as WebP')
+  for (const buffer of buffers) {
+    encoder.addFrame(buffer)
+  }
 
-  encoder.addFrame(canvas.data())
-
-  ctx.fillStyle = 'green'
-  ctx.fillRect(0, 0, 100, 100)
-
-  encoder.addFrame(canvas.data())
-
-  ctx.fillStyle = 'blue'
-  ctx.fillRect(0, 0, 100, 100)
-
-  encoder.addFrame(canvas.data())
-
-  await encoder.writeToFile('output.webp')
-  console.timeEnd('Encoding WebP')
+  await encoder.writeToFile('rgb.webp')
+  console.timeEnd('Encoding rgb as WebP')
 }
 
-async function encodeGif() {
-  const canvas = new Canvas(100, 100)
-  const ctx = canvas.getContext('2d')
+async function gifRgb() {
+  const buffers = rgb()
+  const encoder = new GIFEncoder(100, 100, 'rgb.gif')
 
-  const gifEncoder = new GIFEncoder(100, 100, 'output.gif')
+  encoder.setFrameRate(3)
 
-  gifEncoder.setFrameRate(3)
+  console.time('Encoding rgb as GIF')
+  for (const buffer of buffers) {
+    encoder.addFrame(buffer)
+  }
 
-  console.time('Encoding GIF')
-  ctx.fillStyle = 'red'
-  ctx.fillRect(0, 0, 100, 100)
+  await encoder.finish()
+  console.timeEnd('Encoding rgb as GIF')
+}
 
-  gifEncoder.addFrame(structuredClone(canvas.data()))
+async function webpCircleAndSquare() {
+  const buffers = circleAndSquare()
+  const encoder = new WebpEncoder(100, 100)
 
-  ctx.fillStyle = 'green'
-  ctx.fillRect(0, 0, 100, 100)
+  encoder.setFrameRate(20)
 
-  gifEncoder.addFrame(structuredClone(canvas.data()))
+  console.time('Encoding circle and square as WebP')
+  for (const buffer of buffers) {
+    encoder.addFrame(buffer)
+  }
 
-  ctx.fillStyle = 'blue'
-  ctx.fillRect(0, 0, 100, 100)
+  await encoder.writeToFile('circle-and-square.webp')
+  console.timeEnd('Encoding circle and square as WebP')
+}
 
-  gifEncoder.addFrame(structuredClone(canvas.data()))
+async function gifCircleAndSquare() {
+  const buffers = circleAndSquare()
+  const encoder = new GIFEncoder(100, 100, 'circle-and-square.gif')
 
-  await gifEncoder.finish()
-  console.timeEnd('Encoding GIF')
+  encoder.setFrameRate(20)
+
+  console.time('Encoding circle and square as GIF')
+  for (const buffer of buffers) {
+    encoder.addFrame(buffer)
+  }
+
+  await encoder.finish()
+  console.timeEnd('Encoding circle and square as GIF')
 }
 
 async function main() {
-  await encodeWebp()
-  await encodeGif()
+  await webpRgb()
+  await gifRgb()
+
+  await webpCircleAndSquare()
+  await gifCircleAndSquare()
 }
 
 main()
