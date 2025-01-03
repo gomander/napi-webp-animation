@@ -7,7 +7,6 @@ on:
 
 env:
   DEBUG: 'napi:*'
-  MACOSX_DEPLOYMENT_TARGET: '10.13'
 
 jobs:
   build:
@@ -16,10 +15,7 @@ jobs:
       matrix:
         targets:
           [
-            'x86_64-apple-darwin',
-            'aarch64-apple-darwin',
             'x86_64-pc-windows-msvc',
-            'i686-pc-windows-msvc',
             'aarch64-pc-windows-msvc',
             'x86_64-unknown-linux-gnu',
             'aarch64-unknown-linux-gnu',
@@ -83,13 +79,7 @@ jobs:
       fail-fast: false
       matrix:
         settings:
-          - target: x86_64-apple-darwin
-            host: macos-latest
-          - target: aarch64-apple-darwin
-            host: macos-latest
           - target: x86_64-pc-windows-msvc
-            host: windows-latest
-          - target: i686-pc-windows-msvc
             host: windows-latest
         node: [18, 20, 22]
     runs-on: ${{ matrix.settings.host }}
@@ -104,30 +94,11 @@ jobs:
           version: 9
       - name: Install Node
         uses: actions/setup-node@v4
-        if: matrix.settings.target != 'aarch64-apple-darwin'
         with:
           node-version: ${{ matrix.node }}
           cache: pnpm
-          architecture: x64
-      - uses: actions/setup-node@v4
-        if: matrix.settings.target == 'aarch64-apple-darwin'
-        with:
-          node-version: ${{ matrix.node }}
-          cache: pnpm
-          architecture: arm64
-      - name: Setup node x86
-        if: matrix.settings.target == 'i686-pc-windows-msvc'
-        run: pnpm config set supportedArchitectures.cpu "ia32"
-        shell: bash
       - name: Install dependencies
         run: pnpm install
-      - name: Setup node x86
-        uses: actions/setup-node@v4
-        if: matrix.settings.target == 'i686-pc-windows-msvc'
-        with:
-          node-version: 22
-          cache: pnpm
-          architecture: x86
       - name: Download bindings
         uses: actions/download-artifact@v4
         with:
