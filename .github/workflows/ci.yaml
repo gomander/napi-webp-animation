@@ -7,6 +7,7 @@ on:
 
 env:
   DEBUG: 'napi:*'
+  APP_NAME: 'napi-webp-animation'
   MACOSX_DEPLOYMENT_TARGET: '10.13'
 
 permissions:
@@ -14,7 +15,73 @@ permissions:
   id-token: write
 
 jobs:
-  build:
+  build-linux:
+    strategy:
+      fail-fast: false
+      matrix:
+        targets:
+          [
+            'x86_64-unknown-linux-gnu',
+            'x86_64-unknown-linux-musl',
+            'aarch64-unknown-linux-gnu',
+            'aarch64-unknown-linux-musl',
+            'armv7-unknown-linux-gnueabihf',
+            'aarch64-linux-android',
+            'riscv64gc-unknown-linux-gnu',
+            'aarch64-pc-windows-msvc',
+          ]
+    runs-on: ubuntu-latest
+    name: stable - ${{ matrix.targets }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Cache cargo registry
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo
+            ${{ github.workspace }}/.xwin
+            ~/.napi-rs
+            ./target
+          key: ${{ matrix.targets }}-cargo-cache
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          toolchain: stable
+          targets: ${{ matrix.targets }}
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+      - name: Install Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - name: Install ziglang
+        uses: goto-bus-stop/setup-zig@v1
+        with:
+          version: 0.13.0
+      - name: Install cargo-xwin
+        if: matrix.targets == 'x86_64-pc-windows-msvc' || matrix.targets == 'aarch64-pc-windows-msvc'
+        run: cargo install cargo-xwin
+      - name: Install llvm
+        if: matrix.targets == 'x86_64-pc-windows-msvc' || matrix.targets == 'aarch64-pc-windows-msvc'
+        run: sudo apt install -y llvm
+      - name: Install dependencies
+        run: pnpm install
+      - name: Build bindings
+        run: pnpm build --target ${{ matrix.targets }}
+        env:
+          XWIN_CACHE_DIR: ${{ github.workspace }}/.xwin
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: bindings-${{ matrix.targets }}
+          path: ./${{ env.APP_NAME }}.*.node
+          if-no-files-found: error
+
+  build-macOS-windows-binding:
     strategy:
       fail-fast: false
       matrix:
@@ -33,22 +100,6 @@ jobs:
             build: pnpm build --target x86_64-pc-windows-msvc
             target: 'x86_64-pc-windows-msvc'
             downloadTarget: ''
-          - host: ubuntu-latest
-            target: 'x86_64-unknown-linux-gnu'
-            downloadTarget: ''
-            docker: ghcr.io/brooooooklyn/canvas/ubuntu-builder:jammy
-            build: npm i -g pnpm && pnpm build --target x86_64-unknown-linux-gnu
-          - host: ubuntu-latest
-            downloadTarget: 'x86_64-unknown-linux-musl'
-            target: 'x86_64-unknown-linux-musl'
-            docker: ghcr.io/brooooooklyn/canvas/musl-builder:lts
-            build: >-
-              set -e &&
-              npm install -g pnpm &&
-              export LIB_AOM_STATIC_LIB_PATH=/usr/lib &&
-              export LIB_AOM_INCLUDE_PATH=/usr/include/aom/aom &&
-              export LIB_AOM_PKG_CONFIG_PATH=/usr/lib/pkgconfig &&
-              pnpm build --target x86_64-unknown-linux-musl
           - host: macos-latest
             downloadTarget: 'aarch64-apple-darwin'
             target: 'aarch64-apple-darwin'
@@ -56,63 +107,6 @@ jobs:
               export MACOSX_DEPLOYMENT_TARGET='11.0'
               clang --version
               pnpm build --target aarch64-apple-darwin
-          - host: ubuntu-latest
-            downloadTarget: 'aarch64-unknown-linux-gnu'
-            target: 'aarch64-unknown-linux-gnu'
-            docker: ghcr.io/brooooooklyn/canvas/ubuntu-builder:jammy-aarch64
-            build: >-
-              set -e &&
-              rustup target add aarch64-unknown-linux-gnu &&
-              pnpm build --target aarch64-unknown-linux-gnu
-          - host: ubuntu-latest
-            target: 'aarch64-unknown-linux-musl'
-            downloadTarget: 'aarch64-unknown-linux-musl'
-            docker: ghcr.io/brooooooklyn/canvas/musl-builder:lts
-            build: >-
-              set -e &&
-              npm install -g pnpm &&
-              rustup target add aarch64-unknown-linux-musl &&
-              unset RUSTFLAGS &&
-              export LIB_AOM_PKG_CONFIG_PATH=/usr/aarch64-alpine-linux-musl/aom/lib/pkgconfig/aom.pc &&
-              export LIB_AOM_INCLUDE_PATH=/usr/aarch64-alpine-linux-musl/aom/include &&
-              export LIB_AOM_STATIC_LIB_PATH=/usr/aarch64-alpine-linux-musl/aom/lib &&
-              pnpm build --target aarch64-unknown-linux-musl
-          - host: ubuntu-latest
-            target: 'armv7-unknown-linux-gnueabihf'
-            downloadTarget: 'armv7-unknown-linux-gnueabihf'
-            setup: |
-              sudo apt-get update
-              sudo apt-get install gcc-arm-linux-gnueabihf g++-arm-linux-gnueabihf libatomic1-armhf-cross -y
-              docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
-              docker buildx build --load --platform linux/arm/v7 -t ubuntu:jammy-armv7 . -f jammy-armv7.Dockerfile
-              docker run --rm -dt --name ubuntu-jammy-armv7 ubuntu:jammy-armv7
-              sudo mkdir -p /usr/arm-linux-gnueabihf/lib/llvm-18
-              sudo docker cp ubuntu-jammy-armv7:/usr/lib/llvm-18/lib /usr/arm-linux-gnueabihf/lib/llvm-18/lib
-              sudo docker cp ubuntu-jammy-armv7:/usr/lib/llvm-18/include /usr/arm-linux-gnueabihf/lib/llvm-18/include
-              docker stop ubuntu-jammy-armv7
-            build: pnpm build --target armv7-unknown-linux-gnueabihf --zig --zig-link-only --zig-abi-suffix=2.18
-          - host: ubuntu-latest
-            target: 'aarch64-linux-android'
-            downloadTarget: 'aarch64-linux-android'
-            build: |
-              export CLANG_VERSION=`ls ${ANDROID_NDK_LATEST_HOME}/toolchains/llvm/prebuilt/linux-x86_64/lib/clang | sed 's/ *$//g'`
-              touch "${ANDROID_NDK_LATEST_HOME}/toolchains/llvm/prebuilt/linux-x86_64/lib/clang/${CLANG_VERSION}/lib/linux/aarch64/libgcc.a"
-              chmod 777 "${ANDROID_NDK_LATEST_HOME}/toolchains/llvm/prebuilt/linux-x86_64/lib/clang/${CLANG_VERSION}/lib/linux/aarch64/libgcc.a"
-              echo "INPUT(-lunwind)" > "${ANDROID_NDK_LATEST_HOME}/toolchains/llvm/prebuilt/linux-x86_64/lib/clang/${CLANG_VERSION}/lib/linux/aarch64/libgcc.a"
-              export LDFLAGS="-fuse-ld=lld"
-              export CC=aarch64-linux-android24-clang
-              export CXX=aarch64-linux-android24-clang++
-              export CMAKE_TOOLCHAIN_FILE_aarch64_linux_android="$(pwd)/cmake/android-determine.cmake"
-              pnpm build --target aarch64-linux-android
-          - host: ubuntu-latest
-            target: 'riscv64gc-unknown-linux-gnu'
-            downloadTarget: 'riscv64gc-unknown-linux-gnu'
-            build: |
-              sudo apt-get update
-              sudo apt-get install gcc-riscv64-linux-gnu g++-riscv64-linux-gnu -y
-              export CC=riscv64-linux-gnu-gcc
-              export CXX=riscv64-linux-gnu-g++
-              pnpm build --target riscv64gc-unknown-linux-gnu
 
     name: stable - ${{ matrix.settings.target }} - node@20
     runs-on: ${{ matrix.settings.host }}
@@ -185,6 +179,7 @@ jobs:
         with:
           name: bindings-${{ matrix.settings.target }}
           path: ${{ env.APP_NAME }}.*.node
+          if-no-files-found: error
 
   test-macOS-windows-binding:
     name: Test bindings on ${{ matrix.settings.target }} - node@${{ matrix.node }}
