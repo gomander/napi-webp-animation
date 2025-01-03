@@ -280,7 +280,7 @@ jobs:
         shell: bash
 
       - name: Test bindings
-        run: docker run --rm -v $(pwd):/canvas -w /canvas node:${{ matrix.node }}-slim pnpm test
+        run: pnpm test
 
   test-linux-x64-musl-binding:
     name: Test bindings on x86_64-unknown-linux-musl - node@${{ matrix.node }}
@@ -322,7 +322,7 @@ jobs:
         shell: bash
 
       - name: Test bindings
-        run: docker run --rm -v $(pwd):/canvas -w /canvas node:${{ matrix.node }}-alpine pnpm test
+        run: pnpm test
 
   test-linux-aarch64-gnu-binding:
     name: Test bindings on aarch64-unknown-linux-gnu - node@${{ matrix.node }}
@@ -371,6 +371,7 @@ jobs:
           options: '--platform linux/arm64'
           run: |
             set -e && \
+            npm install -g pnpm && \
             pnpm test
 
   test-linux-aarch64-musl-binding:
@@ -418,6 +419,7 @@ jobs:
           options: '--platform linux/arm64'
           run: |
             set -e
+            npm install -g pnpm
             pnpm test
 
   test-linux-arm-gnueabihf-binding:
@@ -462,6 +464,7 @@ jobs:
           options: '--platform linux/arm/v7'
           run: |
             set -e && \
+            npm install -g pnpm && \
             pnpm test
 
   publish:
