@@ -56,8 +56,9 @@ jobs:
         uses: goto-bus-stop/setup-zig@v1
         with:
           version: 0.13.0
-      - name: Install cargo-xwin
-        run: cargo install cargo-xwin
+      - name: Install cargo-xwin and llvm-lib
+        if: matrix.targets == 'x86_64-pc-windows-msvc' || matrix.targets == 'aarch64-pc-windows-msvc'
+        run: cargo install cargo-xwin llvm-lib
       - name: Install cargo-zigbuild
         uses: taiki-e/install-action@v2
         env:
