@@ -13,7 +13,7 @@ importers:
         version: 1.6.0
     devDependencies:
       '@napi-rs/cli':
-        specifier: 2.18.4
+        specifier: ^2.18.4
         version: 2.18.4
       typescript:
         specifier: ^5.7.2
