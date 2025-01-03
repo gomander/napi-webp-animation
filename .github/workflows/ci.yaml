@@ -368,7 +368,7 @@ jobs:
         uses: addnab/docker-run-action@v3
         with:
           image: node:${{ matrix.node }}-slim
-          options: '--platform linux/arm64'
+          options: '--platform linux/arm64 -v ${{ github.workspace }}:/app -w /app'
           run: |
             set -e && \
             npm install -g pnpm && \
@@ -416,7 +416,7 @@ jobs:
         uses: addnab/docker-run-action@v3
         with:
           image: node:lts-alpine
-          options: '--platform linux/arm64'
+          options: '--platform linux/arm64 -v ${{ github.workspace }}:/app -w /app'
           run: |
             set -e
             npm install -g pnpm
@@ -434,6 +434,11 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
 
       - name: Download artifacts
         uses: actions/download-artifact@v4
@@ -461,7 +466,7 @@ jobs:
         uses: addnab/docker-run-action@v3
         with:
           image: node:${{ matrix.node }}-bullseye-slim
-          options: '--platform linux/arm/v7'
+          options: '--platform linux/arm/v7 -v ${{ github.workspace }}:/app -w /app'
           run: |
             set -e && \
             npm install -g pnpm && \
