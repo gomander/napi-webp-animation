@@ -63,16 +63,17 @@ impl WebpEncoder {
             .to_vec())
     }
 
-    pub fn write_to_file(&self, path: String) -> Result<()> {
+    pub fn write_to_file(&self, path: String) -> Result<Vec<u8>> {
+        let buffer = self.get_buffer()?;
         std::fs::write(
             match path.ends_with(".webp") {
                 true => path,
                 false => format!("{path}.webp"),
             },
-            self.get_buffer()?,
+            buffer.clone(),
         )
         .map_err(EncoderError::WriteError)?;
-        Ok(())
+        Ok(buffer)
     }
 
     pub fn clear_frames(&mut self) {
@@ -132,15 +133,15 @@ pub struct AsyncWriteToFile {
 
 #[napi]
 impl Task for AsyncWriteToFile {
-    type Output = ();
-    type JsValue = JsUndefined;
+    type Output = Vec<u8>;
+    type JsValue = Buffer;
 
     fn compute(&mut self) -> Result<Self::Output> {
         self.encoder.write_to_file(self.path.clone())
     }
 
-    fn resolve(&mut self, env: Env, _: Self::Output) -> Result<Self::JsValue> {
-        Ok(env.get_undefined()?)
+    fn resolve(&mut self, _: Env, output: Self::Output) -> Result<Self::JsValue> {
+        Ok(output.into())
     }
 }
 
@@ -212,8 +213,8 @@ impl JsWebpEncoder {
     }
 
     #[napi]
-    pub fn write_to_file_sync(&self, path: String) -> Result<()> {
-        self.encoder.write_to_file(path)
+    pub fn write_to_file_sync(&self, path: String) -> Result<Buffer> {
+        Ok(self.encoder.write_to_file(path)?.into())
     }
 
     #[napi]

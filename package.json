@@ -55,7 +55,7 @@
     "access": "public"
   },
   "scripts": {
-    "test": "echo \"TODO: write tests\"",
+    "test": "vitest",
     "artifacts": "napi artifacts",
     "build": "napi build --platform --release",
     "build:debug": "napi build --platform",
@@ -63,9 +63,11 @@
     "version": "napi version"
   },
   "devDependencies": {
+    "@napi-rs/canvas": "^0.1.65",
     "@napi-rs/cli": "^2.18.4",
     "@types/node": "^22.10.5",
-    "typescript": "^5.7.2"
+    "typescript": "^5.7.2",
+    "vitest": "^2.1.8"
   },
   "dependencies": {
     "@node-rs/helper": "^1.6.0"
