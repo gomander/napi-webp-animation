@@ -1,6 +1,7 @@
 import fs from 'node:fs/promises'
-import { it, expect } from 'vitest'
-import { WebpEncoder } from '..'
+import assert from 'node:assert'
+import test from 'node:test'
+import { WebpEncoder } from '../index.js'
 import { Canvas, loadImage } from '@napi-rs/canvas'
 
 async function getFrames(): Promise<Buffer[]> {
@@ -15,7 +16,7 @@ async function getFrames(): Promise<Buffer[]> {
   return frames
 }
 
-it('encodes webp', async () => {
+test('encodes webp', async () => {
   const frames = await getFrames()
   const encoder = new WebpEncoder(480, 270, { lossless: false, quality: 75 })
 
@@ -25,5 +26,5 @@ it('encodes webp', async () => {
     encoder.addFrame(frame)
   }
   const data = encoder.writeToFileSync('test/output/test.webp')
-  expect(data.length).toBe(178436)
+  assert.strictEqual(data.length, 178436)
 })

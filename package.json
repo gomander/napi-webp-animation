@@ -48,14 +48,14 @@
     }
   },
   "engines": {
-    "node": ">= 18"
+    "node": ">= 22.6"
   },
   "publishConfig": {
     "registry": "https://registry.npmjs.org/",
     "access": "public"
   },
   "scripts": {
-    "test": "vitest",
+    "test": "node --experimental-strip-types test/main.test.ts",
     "artifacts": "napi artifacts",
     "build": "napi build --platform --release",
     "build:debug": "napi build --platform",
@@ -66,8 +66,7 @@
     "@napi-rs/canvas": "^0.1.65",
     "@napi-rs/cli": "^2.18.4",
     "@types/node": "^22.10.5",
-    "typescript": "^5.7.2",
-    "vitest": "^2.1.8"
+    "typescript": "^5.7.2"
   },
   "dependencies": {
     "@node-rs/helper": "^1.6.0"

@@ -15,7 +15,7 @@ permissions:
   id-token: write
 
 jobs:
-  build-linux:
+  cross-build:
     strategy:
       fail-fast: false
       matrix:
@@ -30,10 +30,11 @@ jobs:
             'aarch64-pc-windows-msvc',
           ]
     runs-on: ubuntu-latest
-    name: stable - ${{ matrix.targets }}
+    name: Build for ${{ matrix.targets }}
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+
       - name: Cache cargo registry
         uses: actions/cache@v4
         with:
@@ -43,36 +44,45 @@ jobs:
             ~/.napi-rs
             ./target
           key: ${{ matrix.targets }}-cargo-cache
+
       - name: Install Rust toolchain
         uses: dtolnay/rust-toolchain@stable
         with:
           toolchain: stable
           targets: ${{ matrix.targets }}
+
       - name: Install pnpm
         uses: pnpm/action-setup@v4
         with:
           version: 9
+
       - name: Install Node
         uses: actions/setup-node@v4
         with:
           node-version: 22
           cache: pnpm
+
       - name: Install ziglang
         uses: goto-bus-stop/setup-zig@v1
         with:
           version: 0.13.0
+
       - name: Install cargo-xwin
         if: matrix.targets == 'aarch64-pc-windows-msvc'
         run: cargo install cargo-xwin
+
       - name: Install llvm
         if: matrix.targets == 'aarch64-pc-windows-msvc'
         run: sudo apt install -y llvm
+
       - name: Install dependencies
         run: pnpm install
+
       - name: Build bindings
         run: pnpm build --target ${{ matrix.targets }}
         env:
           XWIN_CACHE_DIR: ${{ github.workspace }}/.xwin
+
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
@@ -80,7 +90,7 @@ jobs:
           path: ./${{ env.APP_NAME }}.*.node
           if-no-files-found: error
 
-  build-macOS-windows-binding:
+  host-build:
     strategy:
       fail-fast: false
       matrix:
@@ -93,12 +103,14 @@ jobs:
               clang --version
               pnpm build --target x86_64-apple-darwin
             downloadTarget: ''
+
           - host: windows-latest
             setup: |
               choco upgrade llvm
             build: pnpm build --target x86_64-pc-windows-msvc
             target: 'x86_64-pc-windows-msvc'
             downloadTarget: ''
+
           - host: macos-latest
             downloadTarget: 'aarch64-apple-darwin'
             target: 'aarch64-apple-darwin'
@@ -106,6 +118,7 @@ jobs:
               export MACOSX_DEPLOYMENT_TARGET='11.0'
               clang --version
               pnpm build --target aarch64-apple-darwin
+
           - host: ubuntu-latest
             target: 'riscv64gc-unknown-linux-gnu'
             downloadTarget: 'riscv64gc-unknown-linux-gnu'
@@ -116,11 +129,11 @@ jobs:
               export CXX=riscv64-linux-gnu-g++
               pnpm build --target riscv64gc-unknown-linux-gnu
 
-    name: stable - ${{ matrix.settings.target }} - node@20
+    name: Build for ${{ matrix.settings.target }}
     runs-on: ${{ matrix.settings.host }}
-
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
 
       - name: Install pnpm
         uses: pnpm/action-setup@v4
@@ -130,8 +143,8 @@ jobs:
       - name: Setup node
         uses: actions/setup-node@v4
         with:
-          node-version: 20
-          cache: 'pnpm'
+          node-version: 22
+          cache: pnpm
 
       - name: Set up QEMU
         if: ${{ matrix.settings.target == 'armv7-unknown-linux-gnueabihf' }}
@@ -190,9 +203,9 @@ jobs:
           if-no-files-found: error
 
   test-macOS-windows-binding:
-    name: Test bindings on ${{ matrix.settings.target }} - node@${{ matrix.node }}
+    name: Test on ${{ matrix.settings.target }}
     needs:
-      - build-macOS-windows-binding
+      - host-build
     strategy:
       fail-fast: false
       matrix:
@@ -203,11 +216,10 @@ jobs:
             target: 'aarch64-apple-darwin'
           - host: windows-latest
             target: 'x86_64-pc-windows-msvc'
-        node: [18, 20, 22]
     runs-on: ${{ matrix.settings.host }}
-
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
 
       - name: Install pnpm
         uses: pnpm/action-setup@v4
@@ -218,7 +230,7 @@ jobs:
         uses: actions/setup-node@v4
         if: startsWith(matrix.settings.target, 'x86_64')
         with:
-          node-version: ${{ matrix.node }}
+          node-version: 22
           cache: pnpm
           architecture: 'x64'
 
@@ -226,7 +238,7 @@ jobs:
         uses: actions/setup-node@v4
         if: startsWith(matrix.settings.target, 'aarch64')
         with:
-          node-version: ${{ matrix.node }}
+          node-version: 22
           cache: pnpm
           architecture: 'arm64'
 
@@ -243,17 +255,15 @@ jobs:
         run: pnpm test
 
   test-linux-x64-gnu-binding:
-    name: Test bindings on Linux-x64-gnu - node@${{ matrix.node }}
+    name: Test bindings on Linux-x64-gnu
     needs:
-      - build-linux
+      - cross-build
     strategy:
       fail-fast: false
-      matrix:
-        node: [18, 20, 22]
     runs-on: ubuntu-latest
-
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
 
       - name: Install pnpm
         uses: pnpm/action-setup@v4
@@ -263,7 +273,7 @@ jobs:
       - name: Setup node
         uses: actions/setup-node@v4
         with:
-          node-version: ${{ matrix.node }}
+          node-version: 22
           cache: pnpm
 
       - name: Install dependencies
@@ -283,17 +293,16 @@ jobs:
         run: pnpm test
 
   test-linux-x64-musl-binding:
-    name: Test bindings on x86_64-unknown-linux-musl - node@${{ matrix.node }}
+    name: Test bindings on x86_64-unknown-linux-musl
     needs:
-      - build-linux
+      - cross-build
     strategy:
       fail-fast: false
-      matrix:
-        node: [18, 20, 22]
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
 
       - name: Install pnpm
         uses: pnpm/action-setup@v4
@@ -303,7 +312,7 @@ jobs:
       - name: Setup node
         uses: actions/setup-node@v4
         with:
-          node-version: ${{ matrix.node }}
+          node-version: 22
           cache: pnpm
 
       - name: Install dependencies
@@ -322,20 +331,18 @@ jobs:
         shell: bash
 
       - name: Test bindings
-        run: docker run --rm -v $(pwd):/webp -w /webp node:${{ matrix.node }}-alpine npm i -g pnpm && pnpm test
+        run: docker run --rm -v $(pwd):/webp -w /webp node:22-alpine npm i -g pnpm && pnpm test
 
   test-linux-aarch64-gnu-binding:
-    name: Test bindings on aarch64-unknown-linux-gnu - node@${{ matrix.node }}
+    name: Test bindings on aarch64-unknown-linux-gnu
     needs:
-      - build-linux
+      - cross-build
     strategy:
       fail-fast: false
-      matrix:
-        node: [20, 22]
     runs-on: ubuntu-latest
-
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
 
       - name: Install pnpm
         uses: pnpm/action-setup@v4
@@ -367,7 +374,7 @@ jobs:
       - name: Setup and run tests
         uses: addnab/docker-run-action@v3
         with:
-          image: node:${{ matrix.node }}-slim
+          image: node:22-slim
           options: '--platform linux/arm64 -v ${{ github.workspace }}:/webp -w /webp'
           run: |
             set -e && \
@@ -375,14 +382,13 @@ jobs:
             ls -la
 
   test-linux-aarch64-musl-binding:
-    name: Test bindings on aarch64-unknown-linux-musl - node@lts
+    name: Test bindings on aarch64-unknown-linux-musl
     needs:
-      - build-linux
-
+      - cross-build
     runs-on: ubuntu-latest
-
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
 
       - name: Install pnpm
         uses: pnpm/action-setup@v4
@@ -423,17 +429,15 @@ jobs:
             pnpm test
 
   test-linux-arm-gnueabihf-binding:
-    name: Test bindings on armv7-unknown-linux-gnueabihf - node@${{ matrix.node }}
+    name: Test bindings on armv7-unknown-linux-gnueabihf
     needs:
-      - build-linux
+      - cross-build
     strategy:
       fail-fast: false
-      matrix:
-        node: [18, 20, 22]
     runs-on: ubuntu-latest
-
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
 
       - name: Install pnpm
         uses: pnpm/action-setup@v4
@@ -465,7 +469,7 @@ jobs:
       - name: Setup and run tests
         uses: addnab/docker-run-action@v3
         with:
-          image: node:${{ matrix.node }}-bullseye-slim
+          image: node:22-bullseye-slim
           options: '--platform linux/arm/v7 -v ${{ github.workspace }}:/webp -w /webp'
           run: |
             set -e && \
@@ -486,26 +490,33 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+
       - name: Install pnpm
         uses: pnpm/action-setup@v4
         with:
           version: 9
+
       - name: Install Node
         uses: actions/setup-node@v4
         with:
           node-version: 22
           cache: pnpm
+
       - name: Install dependencies
         run: pnpm install
+
       - name: Download all artifacts
         uses: actions/download-artifact@v4
         with:
           path: artifacts
+
       - name: Move artifacts
         run: pnpm artifacts
+
       - name: List packages
         run: ls -R npm
         shell: bash
+
       - name: Publish
         run: |
           if git log -1 --pretty=%B | grep "^[0-9]\+\.[0-9]\+\.[0-9]\+$";
