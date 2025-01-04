@@ -322,7 +322,7 @@ jobs:
         shell: bash
 
       - name: Test bindings
-        run: pnpm test
+        run: docker run --rm -v $(pwd):/webp -w /webp node:${{ matrix.node }}-alpine pnpm test
 
   test-linux-aarch64-gnu-binding:
     name: Test bindings on aarch64-unknown-linux-gnu - node@${{ matrix.node }}
@@ -368,11 +368,11 @@ jobs:
         uses: addnab/docker-run-action@v3
         with:
           image: node:${{ matrix.node }}-slim
-          options: '--platform linux/arm64 -v ${{ github.workspace }}:/app -w /app'
+          options: '--platform linux/arm64 -v ${{ github.workspace }}:/webp -w /webp'
           run: |
             set -e && \
-            npm install -g pnpm && \
-            pnpm test
+            npm run test && \
+            ls -la
 
   test-linux-aarch64-musl-binding:
     name: Test bindings on aarch64-unknown-linux-musl - node@lts
@@ -416,7 +416,7 @@ jobs:
         uses: addnab/docker-run-action@v3
         with:
           image: node:lts-alpine
-          options: '--platform linux/arm64 -v ${{ github.workspace }}:/app -w /app'
+          options: '--platform linux/arm64 -v ${{ github.workspace }}:/webp -w /webp'
           run: |
             set -e
             npm install -g pnpm
@@ -466,11 +466,12 @@ jobs:
         uses: addnab/docker-run-action@v3
         with:
           image: node:${{ matrix.node }}-bullseye-slim
-          options: '--platform linux/arm/v7 -v ${{ github.workspace }}:/app -w /app'
+          options: '--platform linux/arm/v7 -v ${{ github.workspace }}:/webp -w /webp'
           run: |
             set -e && \
             npm install -g pnpm && \
-            pnpm test
+            pnpm test && \
+            ls -la
 
   publish:
     name: Publish
