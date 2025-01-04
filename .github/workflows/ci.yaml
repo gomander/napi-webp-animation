@@ -15,7 +15,7 @@ permissions:
   id-token: write
 
 jobs:
-  build-linux:
+  cross-build:
     strategy:
       fail-fast: false
       matrix:
@@ -34,6 +34,7 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+
       - name: Cache cargo registry
         uses: actions/cache@v4
         with:
@@ -43,36 +44,40 @@ jobs:
             ~/.napi-rs
             ./target
           key: ${{ matrix.targets }}-cargo-cache
+
       - name: Install Rust toolchain
         uses: dtolnay/rust-toolchain@stable
         with:
           toolchain: stable
           targets: ${{ matrix.targets }}
-      - name: Install pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: 9
+
       - name: Install Node
         uses: actions/setup-node@v4
         with:
           node-version: 22
-          cache: pnpm
+          cache: npm
+
       - name: Install ziglang
         uses: goto-bus-stop/setup-zig@v1
         with:
           version: 0.13.0
+
       - name: Install cargo-xwin
         if: matrix.targets == 'aarch64-pc-windows-msvc'
         run: cargo install cargo-xwin
+
       - name: Install llvm
         if: matrix.targets == 'aarch64-pc-windows-msvc'
         run: sudo apt install -y llvm
+
       - name: Install dependencies
-        run: pnpm install
+        run: npm ci
+
       - name: Build bindings
-        run: pnpm build --target ${{ matrix.targets }}
+        run: npm run build --target ${{ matrix.targets }}
         env:
           XWIN_CACHE_DIR: ${{ github.workspace }}/.xwin
+
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
@@ -80,7 +85,7 @@ jobs:
           path: ./${{ env.APP_NAME }}.*.node
           if-no-files-found: error
 
-  build-macOS-windows-binding:
+  host-build:
     strategy:
       fail-fast: false
       matrix:
@@ -91,21 +96,24 @@ jobs:
             build: |
               rustc --print target-cpus
               clang --version
-              pnpm build --target x86_64-apple-darwin
+              npm run build --target x86_64-apple-darwin
             downloadTarget: ''
+
           - host: windows-latest
             setup: |
               choco upgrade llvm
-            build: pnpm build --target x86_64-pc-windows-msvc
+            build: npm run build --target x86_64-pc-windows-msvc
             target: 'x86_64-pc-windows-msvc'
             downloadTarget: ''
+
           - host: macos-latest
             downloadTarget: 'aarch64-apple-darwin'
             target: 'aarch64-apple-darwin'
             build: |
               export MACOSX_DEPLOYMENT_TARGET='11.0'
               clang --version
-              pnpm build --target aarch64-apple-darwin
+              npm run build --target aarch64-apple-darwin
+
           - host: ubuntu-latest
             target: 'riscv64gc-unknown-linux-gnu'
             downloadTarget: 'riscv64gc-unknown-linux-gnu'
@@ -114,24 +122,18 @@ jobs:
               sudo apt-get install gcc-riscv64-linux-gnu g++-riscv64-linux-gnu -y
               export CC=riscv64-linux-gnu-gcc
               export CXX=riscv64-linux-gnu-g++
-              pnpm build --target riscv64gc-unknown-linux-gnu
-
+              npm run build --target riscv64gc-unknown-linux-gnu
     name: stable - ${{ matrix.settings.target }} - node@20
     runs-on: ${{ matrix.settings.host }}
-
     steps:
-      - uses: actions/checkout@v4
-
-      - name: Install pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: 9
+      - name: Checkout code
+        uses: actions/checkout@v4
 
       - name: Setup node
         uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: 'pnpm'
+          cache: npm
 
       - name: Set up QEMU
         if: ${{ matrix.settings.target == 'armv7-unknown-linux-gnueabihf' }}
@@ -158,13 +160,13 @@ jobs:
         uses: ilammy/setup-nasm@v1
         if: matrix.settings.host == 'windows-latest'
 
-      - name: Install
+      - name: Install Rust
         uses: ./.github/actions/setup-rust
         with:
           targets: ${{ matrix.settings.target }}
 
       - name: Install dependencies
-        run: pnpm install
+        run: npm ci
 
       - name: Setup toolchain
         run: ${{ matrix.settings.setup }}
@@ -192,7 +194,7 @@ jobs:
   test-macOS-windows-binding:
     name: Test bindings on ${{ matrix.settings.target }} - node@${{ matrix.node }}
     needs:
-      - build-macOS-windows-binding
+      - host-build
     strategy:
       fail-fast: false
       matrix:
@@ -205,21 +207,16 @@ jobs:
             target: 'x86_64-pc-windows-msvc'
         node: [18, 20, 22]
     runs-on: ${{ matrix.settings.host }}
-
     steps:
-      - uses: actions/checkout@v4
-
-      - name: Install pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: 9
+      - name: Checkout code
+        uses: actions/checkout@v4
 
       - name: Setup node
         uses: actions/setup-node@v4
         if: startsWith(matrix.settings.target, 'x86_64')
         with:
           node-version: ${{ matrix.node }}
-          cache: pnpm
+          cache: npm
           architecture: 'x64'
 
       - name: Setup node
@@ -227,11 +224,11 @@ jobs:
         if: startsWith(matrix.settings.target, 'aarch64')
         with:
           node-version: ${{ matrix.node }}
-          cache: pnpm
+          cache: npm
           architecture: 'arm64'
 
       - name: Install dependencies
-        run: pnpm install
+        run: npm ci
 
       - name: Download artifacts
         uses: actions/download-artifact@v4
@@ -240,34 +237,29 @@ jobs:
           path: .
 
       - name: Test bindings
-        run: pnpm test
+        run: npm run test
 
   test-linux-x64-gnu-binding:
     name: Test bindings on Linux-x64-gnu - node@${{ matrix.node }}
     needs:
-      - build-linux
+      - cross-build
     strategy:
       fail-fast: false
       matrix:
         node: [18, 20, 22]
     runs-on: ubuntu-latest
-
     steps:
-      - uses: actions/checkout@v4
-
-      - name: Install pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: 9
+      - name: Checkout code
+        uses: actions/checkout@v4
 
       - name: Setup node
         uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node }}
-          cache: pnpm
+          cache: npm
 
       - name: Install dependencies
-        run: pnpm install
+        run: npm ci
 
       - name: Download artifacts
         uses: actions/download-artifact@v4
@@ -280,36 +272,30 @@ jobs:
         shell: bash
 
       - name: Test bindings
-        run: pnpm test
+        run: npm run test
 
   test-linux-x64-musl-binding:
     name: Test bindings on x86_64-unknown-linux-musl - node@${{ matrix.node }}
     needs:
-      - build-linux
+      - cross-build
     strategy:
       fail-fast: false
       matrix:
         node: [18, 20, 22]
     runs-on: ubuntu-latest
-
     steps:
       - uses: actions/checkout@v4
-
-      - name: Install pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: 9
 
       - name: Setup node
         uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node }}
-          cache: pnpm
+          cache: npm
 
       - name: Install dependencies
         run: |
-          pnpm config set supportedArchitectures.libc "musl"
-          pnpm install
+          npm config set supportedArchitectures.libc "musl"
+          npm ci
 
       - name: Download artifacts
         uses: actions/download-artifact@v4
@@ -322,25 +308,20 @@ jobs:
         shell: bash
 
       - name: Test bindings
-        run: pnpm test
+        run: npm run test
 
   test-linux-aarch64-gnu-binding:
     name: Test bindings on aarch64-unknown-linux-gnu - node@${{ matrix.node }}
     needs:
-      - build-linux
+      - cross-build
     strategy:
       fail-fast: false
       matrix:
         node: [20, 22]
     runs-on: ubuntu-latest
-
     steps:
-      - uses: actions/checkout@v4
-
-      - name: Install pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: 9
+      - name: Checkout code
+        uses: actions/checkout@v4
 
       - name: Download artifacts
         uses: actions/download-artifact@v4
@@ -354,9 +335,9 @@ jobs:
 
       - name: Install dependencies
         run: |
-          pnpm config set supportedArchitectures.cpu "arm64"
-          pnpm config set supportedArchitectures.libc "glibc"
-          pnpm install
+          npm config set supportedArchitectures.cpu "arm64"
+          npm config set supportedArchitectures.libc "glibc"
+          npm ci
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
         with:
@@ -371,23 +352,16 @@ jobs:
           options: '--platform linux/arm64 -v ${{ github.workspace }}:/app -w /app'
           run: |
             set -e && \
-            npm install -g pnpm && \
-            pnpm test
+            npm run test
 
   test-linux-aarch64-musl-binding:
     name: Test bindings on aarch64-unknown-linux-musl - node@lts
     needs:
-      - build-linux
-
+      - cross-build
     runs-on: ubuntu-latest
-
     steps:
-      - uses: actions/checkout@v4
-
-      - name: Install pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: 9
+      - name: Checkout code
+        uses: actions/checkout@v4
 
       - name: Download artifacts
         uses: actions/download-artifact@v4
@@ -401,9 +375,9 @@ jobs:
 
       - name: Install dependencies
         run: |
-          pnpm config set supportedArchitectures.cpu "arm64"
-          pnpm config set supportedArchitectures.libc "musl"
-          pnpm install
+          npm config set supportedArchitectures.cpu "arm64"
+          npm config set supportedArchitectures.libc "musl"
+          npm ci
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
@@ -419,26 +393,20 @@ jobs:
           options: '--platform linux/arm64 -v ${{ github.workspace }}:/app -w /app'
           run: |
             set -e
-            npm install -g pnpm
-            pnpm test
+            npm run test
 
   test-linux-arm-gnueabihf-binding:
     name: Test bindings on armv7-unknown-linux-gnueabihf - node@${{ matrix.node }}
     needs:
-      - build-linux
+      - cross-build
     strategy:
       fail-fast: false
       matrix:
         node: [18, 20, 22]
     runs-on: ubuntu-latest
-
     steps:
-      - uses: actions/checkout@v4
-
-      - name: Install pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: 9
+      - name: Checkout code
+        uses: actions/checkout@v4
 
       - name: Download artifacts
         uses: actions/download-artifact@v4
@@ -452,8 +420,8 @@ jobs:
 
       - name: Install dependencies
         run: |
-          pnpm config set supportedArchitectures.cpu "arm"
-          pnpm install
+          npm config set supportedArchitectures.cpu "arm"
+          npm ci
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
@@ -469,8 +437,7 @@ jobs:
           options: '--platform linux/arm/v7 -v ${{ github.workspace }}:/app -w /app'
           run: |
             set -e && \
-            npm install -g pnpm && \
-            pnpm test
+            npm run test
 
   publish:
     name: Publish
@@ -485,26 +452,28 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-      - name: Install pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: 9
+
       - name: Install Node
         uses: actions/setup-node@v4
         with:
           node-version: 22
-          cache: pnpm
+          cache: npm
+
       - name: Install dependencies
-        run: pnpm install
+        run: npm ci
+
       - name: Download all artifacts
         uses: actions/download-artifact@v4
         with:
           path: artifacts
+
       - name: Move artifacts
-        run: pnpm artifacts
+        run: npm run artifacts
+
       - name: List packages
         run: ls -R npm
         shell: bash
+
       - name: Publish
         run: |
           if git log -1 --pretty=%B | grep "^[0-9]\+\.[0-9]\+\.[0-9]\+$";
