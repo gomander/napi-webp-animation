@@ -55,7 +55,7 @@
     "access": "public"
   },
   "scripts": {
-    "test": "node --experimental-strip-types test/main.test.ts",
+    "test": "node --experimental-strip-types test/main.test.mts",
     "artifacts": "napi artifacts",
     "build": "napi build --platform --release",
     "build:debug": "napi build --platform",
@@ -67,9 +67,6 @@
     "@napi-rs/cli": "^2.18.4",
     "@types/node": "^22.10.5",
     "typescript": "^5.7.2"
-  },
-  "dependencies": {
-    "@node-rs/helper": "^1.6.0"
   },
   "author": "Gunnar Omander <gunnar@gomander.dev>",
   "license": "MIT"

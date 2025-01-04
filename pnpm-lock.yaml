@@ -7,10 +7,6 @@ settings:
 importers:
 
   .:
-    dependencies:
-      '@node-rs/helper':
-        specifier: ^1.6.0
-        version: 1.6.0
     devDependencies:
       '@napi-rs/canvas':
         specifier: ^0.1.65
@@ -96,12 +92,6 @@ packages:
     engines: {node: '>= 10'}
     hasBin: true
 
-  '@napi-rs/triples@1.2.0':
-    resolution: {integrity: sha512-HAPjR3bnCsdXBsATpDIP5WCrw0JcACwhhrwIAQhiR46n+jm+a2F8kBsfseAuWtSyQ+H3Yebt2k43B5dy+04yMA==}
-
-  '@node-rs/helper@1.6.0':
-    resolution: {integrity: sha512-2OTh/tokcLA1qom1zuCJm2gQzaZljCCbtX1YCrwRVd/toz7KxaDRFeLTAPwhs8m9hWgzrBn5rShRm6IaZofCPw==}
-
   '@types/node@22.10.5':
     resolution: {integrity: sha512-F8Q+SeGimwOo86fiovQh8qiXfFEh2/ocYv7tU5pJ3EXMSSxk1Joj5wefpFK2fHTf/N6HKGSxIDBT9f3gCxXPkQ==}
 
@@ -159,12 +149,6 @@ snapshots:
       '@napi-rs/canvas-win32-x64-msvc': 0.1.65
 
   '@napi-rs/cli@2.18.4': {}
-
-  '@napi-rs/triples@1.2.0': {}
-
-  '@node-rs/helper@1.6.0':
-    dependencies:
-      '@napi-rs/triples': 1.2.0
 
   '@types/node@22.10.5':
     dependencies:
