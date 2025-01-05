@@ -3,6 +3,12 @@ on:
   push:
     branches:
       - main
+    paths-ignore:
+      - 'sample/**'
+      - '**/README.md'
+      - 'CHANGELOG.md'
+      - '.editorconfig'
+      - '.gitignore'
   pull_request:
 
 env:

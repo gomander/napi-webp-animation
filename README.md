@@ -23,7 +23,7 @@ import { WebpEncoder } from 'napi-webp-animation'
 // Create an encoder instance with width and height
 const encoder = new WebpEncoder(100, 100)
 
-// Set the frame rate of the animated WebP - default 30
+// Change the frame rate from the default (30)
 encoder.setFrameRate(24)
 
 // Add your frames as buffers
@@ -31,11 +31,12 @@ for (const frameBuffer of frameBuffers) {
   encoder.addFrame(frameBuffer)
 }
 
-// Encode the animated WebP and write it to file!
-const data = await encoder.writeToFile('output.webp')
-
-// Or get the data as a buffer without writing it to file
+// Encode the animated WebP and get the data as a buffer!
 const data = await encoder.getBuffer()
+
+// Or write it directly to file (also returns a buffer)
+await encoder.writeToFile('output.webp')
+
 
 // Output options can be set on `writeToFile`, `getBuffer`
 await encoder.writeToFile('output.webp', {
@@ -48,10 +49,6 @@ await encoder.writeToFile('output.webp', {
 // Synchronous methods are also available, and also support options
 encoder.writeToFileSync('output.webp')
 encoder.getBufferSync()
-
-// Clear the encoder's frames, set the dimensions, or set the options
-encoder.clearFrames()
-encoder.setDimensions(480, 270)
 ```
 
 ## Support matrix

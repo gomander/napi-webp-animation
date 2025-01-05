@@ -2,50 +2,8 @@
   "name": "napi-webp-animation",
   "version": "0.0.1",
   "description": "A fully typed WebP animation package for NodeJS using Rust",
-  "exports": {
-    ".": {
-      "import": {
-        "types": "./index.d.ts",
-        "default": "./index.js"
-      },
-      "require": {
-        "types": "./index.d.ts",
-        "default": "./index.js"
-      },
-      "default": "./index.js"
-    }
-  },
-  "main": "index.js",
-  "types": "index.d.ts",
-  "keywords": [
-    "napi",
-    "napi-rs",
-    "n-api",
-    "rust",
-    "node-addon",
-    "node-addon-api",
-    "webp",
-    "webp-animation"
-  ],
-  "files": [
-    "index.js",
-    "index.d.ts"
-  ],
-  "napi": {
-    "name": "napi-webp-animation",
-    "triples": {
-      "additional": [
-        "aarch64-apple-darwin"
-      ]
-    }
-  },
-  "engines": {
-    "node": ">= 18"
-  },
-  "publishConfig": {
-    "registry": "https://registry.npmjs.org/",
-    "access": "public"
-  },
+  "author": "Gunnar Omander <gunnar@gomander.dev> (https://gomander.dev)",
+  "license": "MIT",
   "scripts": {
     "artifacts": "napi artifacts",
     "build": "napi build --platform --release",
@@ -61,6 +19,53 @@
     "@types/node": "^22.10.5",
     "typescript": "^5.7.2"
   },
-  "author": "Gunnar Omander <gunnar@gomander.dev>",
-  "license": "MIT"
+  "napi": {
+    "name": "napi-webp-animation",
+    "triples": {
+      "additional": [
+        "aarch64-apple-darwin"
+      ]
+    }
+  },
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./index.d.ts",
+        "default": "./index.js"
+      },
+      "require": {
+        "types": "./index.d.ts",
+        "default": "./index.js"
+      },
+      "default": "./index.js"
+    }
+  },
+  "main": "index.js",
+  "types": "index.d.ts",
+  "files": [
+    "index.js",
+    "index.d.ts"
+  ],
+  "engines": {
+    "node": ">= 18"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/gomander/napi-webp-animation.git"
+  },
+  "bugs": "https://github.com/gomander/napi-webp-animation/issues",
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org/",
+    "access": "public"
+  },
+  "keywords": [
+    "napi",
+    "napi-rs",
+    "n-api",
+    "rust",
+    "node-addon",
+    "node-addon-api",
+    "webp",
+    "webp-animation"
+  ]
 }
