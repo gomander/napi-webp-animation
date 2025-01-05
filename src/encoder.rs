@@ -97,7 +97,6 @@ impl WebpEncoder {
 pub struct JsWebpEncoderOptions {
     pub lossless: Option<bool>,
     pub quality: Option<u8>,
-    pub method: Option<u8>,
     pub loop_count: Option<i32>,
 }
 
@@ -239,7 +238,7 @@ fn map_js_webp_encoder_options(options: JsWebpEncoderOptions) -> EncoderOptions 
                 webp_animation::EncodingType::Lossy(LossyEncodingConfig::default())
             },
             quality: options.quality.unwrap_or(1) as f32,
-            method: options.method.unwrap_or(4) as usize,
+            ..Default::default()
         }),
         ..Default::default()
     }

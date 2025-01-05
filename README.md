@@ -46,7 +46,6 @@ await encoder.writeToFile('output.webp')
 await encoder.writeToFile('output.webp', {
   lossless: false, // default true
   quality: 75,     // 0 (fast) - 100 (slower) - default 1
-  method: 3,       // 0 (fast) - 6 (slower) - default 4
   loopCount: 1     // 0 = infinite, n > 0 = play n times - default 0
 })
 

@@ -6,7 +6,6 @@
 export interface JsWebpEncoderOptions {
   lossless?: boolean
   quality?: number
-  method?: number
   loopCount?: number
 }
 export type JsWebpEncoder = WebpEncoder

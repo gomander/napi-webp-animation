@@ -39,3 +39,12 @@ test('encodes webp', async () => {
   )
   assert.strictEqual(data.length, 178436)
 })
+
+/**
+ * Test values:
+ * lossy 50: 133280
+ * lossy 75:  178436
+ * lossless 0: 1229416
+ * lossless 50: 1173410
+ * lossless 100: 1168740
+ */
