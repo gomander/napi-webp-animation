@@ -51,7 +51,7 @@ impl WebpEncoder {
         let mut timestamp: i32 = 0;
         for frame in &self.frames {
             encoder
-                .add_frame(&*frame.frame_data, timestamp)
+                .add_frame(&frame.frame_data, timestamp)
                 .map_err(EncoderError::EncoderError)?;
             timestamp += frame.duration.unwrap_or(1000. / (self.frame_rate as f64)) as i32;
         }
@@ -68,7 +68,7 @@ impl WebpEncoder {
                 true => path,
                 false => format!("{path}.webp"),
             },
-            buffer.clone(),
+            &buffer,
         )
         .map_err(EncoderError::WriteError)?;
         Ok(buffer)
