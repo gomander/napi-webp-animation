@@ -12,7 +12,11 @@ By virtue of being built with NAPI-RS, this package is fully typed, and compatib
 ## Install
 
 ```sh
-npm install napi-webp-animation
+# Node
+[npm|pnpm|yarn] install napi-webp-animation
+
+# Deno
+deno add npm:napi-webp-animation
 ```
 
 ## Usage
@@ -59,6 +63,8 @@ encoder.getBufferSync()
 | macOS x64        | ✓      | ✓      | ✓      |
 | macOS aarch64    | ✓      | ✓      | ✓      |
 | Windows x64      | ✓      | ✓      | ✓      |
+
+I have also tested with Deno and it works, though I have not written any automated tests for Deno.
 
 ## Contributing
 
