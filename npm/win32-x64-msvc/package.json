@@ -11,7 +11,7 @@
   "files": [
     "napi-webp-animation.win32-x64-msvc.node"
   ],
-  "description": "A WebP animation package for NodeJS using Rust",
+  "description": "A fully typed WebP animation package for NodeJS using Rust",
   "keywords": [
     "napi",
     "napi-rs",

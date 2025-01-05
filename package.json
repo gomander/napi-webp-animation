@@ -1,7 +1,7 @@
 {
   "name": "napi-webp-animation",
   "version": "0.0.1",
-  "description": "A WebP animation package for NodeJS using Rust",
+  "description": "A fully typed WebP animation package for NodeJS using Rust",
   "exports": {
     ".": {
       "import": {
