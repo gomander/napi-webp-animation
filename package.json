@@ -49,10 +49,8 @@
   "engines": {
     "node": ">= 18"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/gomander/napi-webp-animation.git"
-  },
+  "repository": "gomander/napi-webp-animation",
+  "homepage": "https://github.com/gomander/napi-webp-animation#readme",
   "bugs": "https://github.com/gomander/napi-webp-animation/issues",
   "publishConfig": {
     "registry": "https://registry.npmjs.org/",
