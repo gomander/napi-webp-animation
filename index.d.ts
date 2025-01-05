@@ -11,14 +11,13 @@ export interface JsWebpEncoderOptions {
 }
 export type JsWebpEncoder = WebpEncoder
 export declare class WebpEncoder {
-  constructor(width: number, height: number, options?: JsWebpEncoderOptions)
+  constructor(width: number, height: number)
   setFrameRate(frameRate: number): void
   addFrame(frameData: Buffer, duration?: number): void
-  getBuffer(): Promise<Buffer>
-  getBufferSync(): Buffer
-  writeToFile(path: string): Promise<Buffer>
-  writeToFileSync(path: string): Buffer
+  getBuffer(options?: JsWebpEncoderOptions): Promise<Buffer>
+  getBufferSync(options?: JsWebpEncoderOptions): Buffer
+  writeToFile(path: string, options?: JsWebpEncoderOptions): Promise<Buffer>
+  writeToFileSync(path: string, options?: JsWebpEncoderOptions): Buffer
   clearFrames(): void
   setDimensions(width: number, height: number): void
-  setOptions(options: JsWebpEncoderOptions): void
 }

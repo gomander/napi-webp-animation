@@ -19,17 +19,15 @@ impl Clone for WebpEncoderFrame {
 pub struct WebpEncoder {
     width: u32,
     height: u32,
-    options: EncoderOptions,
     frame_rate: u16,
     frames: Vec<WebpEncoderFrame>,
 }
 
 impl WebpEncoder {
-    pub fn new(width: u32, height: u32, options: Option<EncoderOptions>) -> Self {
+    pub fn new(width: u32, height: u32) -> Self {
         WebpEncoder {
             width,
             height,
-            options: options.unwrap_or_else(EncoderOptions::default),
             frame_rate: 30,
             frames: Vec::new(),
         }
@@ -46,10 +44,10 @@ impl WebpEncoder {
         });
     }
 
-    pub fn get_buffer(&self) -> Result<Vec<u8>> {
-        let mut encoder =
-            Encoder::new_with_options((self.width, self.height), self.options.to_owned())
-                .map_err(EncoderError::EncoderError)?;
+    pub fn get_buffer(&self, options: Option<EncoderOptions>) -> Result<Vec<u8>> {
+        let options = options.unwrap_or_else(|| EncoderOptions::default());
+        let mut encoder = Encoder::new_with_options((self.width, self.height), options)
+            .map_err(EncoderError::EncoderError)?;
         let mut timestamp: i32 = 0;
         for frame in &self.frames {
             encoder
@@ -63,8 +61,8 @@ impl WebpEncoder {
             .to_vec())
     }
 
-    pub fn write_to_file(&self, path: String) -> Result<Vec<u8>> {
-        let buffer = self.get_buffer()?;
+    pub fn write_to_file(&self, path: String, options: Option<EncoderOptions>) -> Result<Vec<u8>> {
+        let buffer = self.get_buffer(options)?;
         std::fs::write(
             match path.ends_with(".webp") {
                 true => path,
@@ -85,15 +83,10 @@ impl WebpEncoder {
         self.height = height;
     }
 
-    pub fn set_options(&mut self, options: EncoderOptions) {
-        self.options = options;
-    }
-
     pub fn clone(&self) -> Self {
         WebpEncoder {
             width: self.width,
             height: self.height,
-            options: self.options.clone(),
             frame_rate: self.frame_rate,
             frames: self.frames.clone(),
         }
@@ -110,6 +103,7 @@ pub struct JsWebpEncoderOptions {
 
 pub struct AsyncGetBuffer {
     encoder: WebpEncoder,
+    options: Option<EncoderOptions>,
 }
 
 #[napi]
@@ -118,7 +112,7 @@ impl Task for AsyncGetBuffer {
     type JsValue = Buffer;
 
     fn compute(&mut self) -> Result<Self::Output> {
-        self.encoder.get_buffer()
+        self.encoder.get_buffer(self.options.clone())
     }
 
     fn resolve(&mut self, _: Env, output: Self::Output) -> Result<Self::JsValue> {
@@ -129,6 +123,7 @@ impl Task for AsyncGetBuffer {
 pub struct AsyncWriteToFile {
     encoder: WebpEncoder,
     path: String,
+    options: Option<EncoderOptions>,
 }
 
 #[napi]
@@ -137,7 +132,8 @@ impl Task for AsyncWriteToFile {
     type JsValue = Buffer;
 
     fn compute(&mut self) -> Result<Self::Output> {
-        self.encoder.write_to_file(self.path.clone())
+        self.encoder
+            .write_to_file(self.path.clone(), self.options.clone())
     }
 
     fn resolve(&mut self, _: Env, output: Self::Output) -> Result<Self::JsValue> {
@@ -153,28 +149,9 @@ pub struct JsWebpEncoder {
 #[napi]
 impl JsWebpEncoder {
     #[napi(constructor)]
-    pub fn new(
-        width: u32,
-        height: u32,
-        #[napi(ts_arg_type = "JsWebpEncoderOptions")] options: Option<JsWebpEncoderOptions>,
-    ) -> Self {
-        let options = options.map(|options| EncoderOptions {
-            anim_params: AnimParams {
-                loop_count: options.loop_count.unwrap_or(0),
-            },
-            encoding_config: Some(EncodingConfig {
-                encoding_type: if options.lossless.unwrap_or(true) {
-                    webp_animation::EncodingType::Lossless
-                } else {
-                    webp_animation::EncodingType::Lossy(LossyEncodingConfig::default())
-                },
-                quality: options.quality.unwrap_or(1) as f32,
-                method: options.method.unwrap_or(4) as usize,
-            }),
-            ..Default::default()
-        });
+    pub fn new(width: u32, height: u32) -> Self {
         JsWebpEncoder {
-            encoder: WebpEncoder::new(width, height, options),
+            encoder: WebpEncoder::new(width, height),
         }
     }
 
@@ -193,28 +170,50 @@ impl JsWebpEncoder {
     }
 
     #[napi]
-    pub fn get_buffer(&self) -> AsyncTask<AsyncGetBuffer> {
+    pub fn get_buffer(
+        &self,
+        #[napi(ts_arg_type = "JsWebpEncoderOptions")] options: Option<JsWebpEncoderOptions>,
+    ) -> AsyncTask<AsyncGetBuffer> {
         AsyncTask::new(AsyncGetBuffer {
             encoder: self.encoder.clone(),
+            options: options.map(map_js_webp_encoder_options),
         })
     }
 
     #[napi]
-    pub fn get_buffer_sync(&self) -> Result<Buffer> {
-        Ok(self.encoder.get_buffer()?.into())
+    pub fn get_buffer_sync(
+        &self,
+        #[napi(ts_arg_type = "JsWebpEncoderOptions")] options: Option<JsWebpEncoderOptions>,
+    ) -> Result<Buffer> {
+        Ok(self
+            .encoder
+            .get_buffer(options.map(map_js_webp_encoder_options))?
+            .into())
     }
 
     #[napi]
-    pub fn write_to_file(&self, path: String) -> AsyncTask<AsyncWriteToFile> {
+    pub fn write_to_file(
+        &self,
+        path: String,
+        #[napi(ts_arg_type = "JsWebpEncoderOptions")] options: Option<JsWebpEncoderOptions>,
+    ) -> AsyncTask<AsyncWriteToFile> {
         AsyncTask::new(AsyncWriteToFile {
             encoder: self.encoder.clone(),
             path,
+            options: options.map(map_js_webp_encoder_options),
         })
     }
 
     #[napi]
-    pub fn write_to_file_sync(&self, path: String) -> Result<Buffer> {
-        Ok(self.encoder.write_to_file(path)?.into())
+    pub fn write_to_file_sync(
+        &self,
+        path: String,
+        #[napi(ts_arg_type = "JsWebpEncoderOptions")] options: Option<JsWebpEncoderOptions>,
+    ) -> Result<Buffer> {
+        Ok(self
+            .encoder
+            .write_to_file(path, options.map(map_js_webp_encoder_options))?
+            .into())
     }
 
     #[napi]
@@ -226,24 +225,23 @@ impl JsWebpEncoder {
     pub fn set_dimensions(&mut self, width: u32, height: u32) {
         self.encoder.set_dimensions(width, height);
     }
+}
 
-    #[napi]
-    pub fn set_options(&mut self, options: JsWebpEncoderOptions) {
-        self.encoder.set_options(EncoderOptions {
-            anim_params: AnimParams {
-                loop_count: options.loop_count.unwrap_or(0),
+fn map_js_webp_encoder_options(options: JsWebpEncoderOptions) -> EncoderOptions {
+    EncoderOptions {
+        anim_params: AnimParams {
+            loop_count: options.loop_count.unwrap_or(0),
+        },
+        encoding_config: Some(EncodingConfig {
+            encoding_type: if options.lossless.unwrap_or(true) {
+                webp_animation::EncodingType::Lossless
+            } else {
+                webp_animation::EncodingType::Lossy(LossyEncodingConfig::default())
             },
-            encoding_config: Some(EncodingConfig {
-                encoding_type: if options.lossless.unwrap_or(true) {
-                    webp_animation::EncodingType::Lossless
-                } else {
-                    webp_animation::EncodingType::Lossy(LossyEncodingConfig::default())
-                },
-                quality: options.quality.unwrap_or(1) as f32,
-                method: options.method.unwrap_or(4) as usize,
-            }),
-            ..Default::default()
-        });
+            quality: options.quality.unwrap_or(1) as f32,
+            method: options.method.unwrap_or(4) as usize,
+        }),
+        ..Default::default()
     }
 }
 

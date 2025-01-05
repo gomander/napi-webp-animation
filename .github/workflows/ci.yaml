@@ -203,7 +203,7 @@ jobs:
           if-no-files-found: error
 
   test-macOS-windows-binding:
-    name: Test on ${{ matrix.settings.target }}
+    name: Test on ${{ matrix.settings.target }} - Node ${{ matrix.node }}
     needs:
       - host-build
     strategy:
@@ -216,6 +216,7 @@ jobs:
             target: 'aarch64-apple-darwin'
           - host: windows-latest
             target: 'x86_64-pc-windows-msvc'
+        node: [18, 20, 22]
     runs-on: ${{ matrix.settings.host }}
     steps:
       - name: Checkout code
@@ -230,7 +231,7 @@ jobs:
         uses: actions/setup-node@v4
         if: startsWith(matrix.settings.target, 'x86_64')
         with:
-          node-version: 22
+          node-version: ${{ matrix.node }}
           cache: pnpm
           architecture: 'x64'
 
@@ -238,7 +239,7 @@ jobs:
         uses: actions/setup-node@v4
         if: startsWith(matrix.settings.target, 'aarch64')
         with:
-          node-version: 22
+          node-version: ${{ matrix.node }}
           cache: pnpm
           architecture: 'arm64'
 
@@ -255,11 +256,13 @@ jobs:
         run: pnpm test
 
   test-linux-x64-gnu-binding:
-    name: Test bindings on linux-x64-gnu
+    name: Test bindings on linux-x64-gnu - Node ${{ matrix.node }}
     needs:
       - cross-build
     strategy:
       fail-fast: false
+      matrix:
+        node: [18, 20, 22]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -273,7 +276,7 @@ jobs:
       - name: Setup node
         uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: ${{ matrix.node }}
           cache: pnpm
 
       - name: Install dependencies

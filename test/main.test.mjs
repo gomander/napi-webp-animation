@@ -1,14 +1,20 @@
-import fs from 'node:fs/promises'
+// @ts-check
+
 import assert from 'node:assert'
+import fs from 'node:fs/promises'
+import { dirname } from 'node:path'
 import test from 'node:test'
+import { fileURLToPath } from 'node:url'
 import { WebpEncoder } from '../index.js'
 import { Canvas, loadImage } from '@napi-rs/canvas'
 
-async function getFrames(): Promise<Buffer[]> {
-  const frames: Buffer[] = []
+/** @returns {Promise<Buffer[]>} */
+async function getFrames() {
+  /** @type {Buffer[]} */
+  const frames = []
   const ctx = new Canvas(480, 270).getContext('2d')
   for (let i = 1; i <= 17; i++) {
-    const path = `${import.meta.dirname}/fixtures/frames/${i}.png`
+    const path = `${dirname(fileURLToPath(import.meta.url))}/fixtures/frames/${i}.png`
     const file = await fs.readFile(path)
     const img = await loadImage(file)
     ctx.drawImage(img, 0, 0)
@@ -20,13 +26,16 @@ async function getFrames(): Promise<Buffer[]> {
 
 test('encodes webp', async () => {
   const frames = await getFrames()
-  const encoder = new WebpEncoder(480, 270, { lossless: false, quality: 75 })
+  const encoder = new WebpEncoder(480, 270)
 
   encoder.setFrameRate(24)
 
   for (const frame of frames) {
     encoder.addFrame(frame)
   }
-  const data = encoder.writeToFileSync('test/output/test.webp')
+  const data = encoder.writeToFileSync(
+    'test/output/test.webp',
+    { lossless: false, quality: 75 }
+  )
   assert.strictEqual(data.length, 178436)
 })
