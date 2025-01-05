@@ -8,10 +8,12 @@ async function getFrames(): Promise<Buffer[]> {
   const frames: Buffer[] = []
   const ctx = new Canvas(480, 270).getContext('2d')
   for (let i = 1; i <= 17; i++) {
-    const file = await fs.readFile(`${import.meta.dirname}/fixtures/frames/${i}.png`)
+    const path = `${import.meta.dirname}/fixtures/frames/${i}.png`
+    const file = await fs.readFile(path)
     const img = await loadImage(file)
     ctx.drawImage(img, 0, 0)
-    frames.push(Buffer.from(ctx.getImageData(0, 0, 480, 270).data))
+    const { data } = ctx.getImageData(0, 0, 480, 270)
+    frames.push(Buffer.from(data))
   }
   return frames
 }
