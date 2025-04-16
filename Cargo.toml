@@ -8,13 +8,13 @@ version = "0.0.1"
 crate-type = ["cdylib"]
 
 [dependencies]
-napi = "^2.16.13"
+napi = "^2.16.17"
 napi-derive = "^2.16.13"
-thiserror = "^2.0.9"
+thiserror = "^2.0.12"
 webp-animation = "^0.9.0"
 
 [build-dependencies]
-napi-build = "^2.1.4"
+napi-build = "^2.1.6"
 
 [profile.release]
 codegen-units = 1

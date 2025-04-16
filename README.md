@@ -41,7 +41,6 @@ const data = await encoder.getBuffer()
 // Or write it directly to file (also returns a buffer)
 await encoder.writeToFile('output.webp')
 
-
 // Output options can be set on `writeToFile`, `getBuffer`
 await encoder.writeToFile('output.webp', {
   lossless: false, // default true
