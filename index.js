@@ -310,6 +310,7 @@ if (!nativeBinding) {
   throw new Error(`Failed to load native binding`)
 }
 
-const { WebpEncoder } = nativeBinding
+const { decodeWebp, WebpEncoder } = nativeBinding
 
+module.exports.decodeWebp = decodeWebp
 module.exports.WebpEncoder = WebpEncoder

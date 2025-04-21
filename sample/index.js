@@ -1,6 +1,7 @@
 // @ts-check
 
-import { WebpEncoder } from '../index.js'
+import { readFile } from 'node:fs/promises'
+import { WebpEncoder, decodeWebp } from '../index.js'
 import { GIFEncoder } from '@gomander/napi-gif-encoder'
 import { rgb, circleAndSquare } from './animations.js'
 
@@ -64,12 +65,31 @@ async function gifCircleAndSquare() {
   console.timeEnd('Encoding circle and square as GIF')
 }
 
+/**
+ * @param {string} inputPath
+ * @param {string} outputPath
+ * @returns {Promise<void>}
+ */
+async function reverseWebp(inputPath, outputPath) {
+  const buffer = await readFile(inputPath)
+  const decodedWebp = decodeWebp(buffer)
+  const encoder = new WebpEncoder(decodedWebp.width, decodedWebp.height)
+  encoder.setFrameRate(20)
+  for (let i = decodedWebp.frames.length - 1; i >= 0; i--) {
+    const frame = decodedWebp.frames[i]
+    encoder.addFrame(frame.data)
+  }
+  await encoder.writeToFile(outputPath)
+}
+
 async function main() {
   await webpRgb()
   await gifRgb()
 
   await webpCircleAndSquare()
   await gifCircleAndSquare()
+
+  await reverseWebp('circle-and-square.webp', 'circle-and-square-reversed.webp')
 }
 
 main()

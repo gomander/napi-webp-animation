@@ -45,7 +45,7 @@ impl WebpEncoder {
     }
 
     pub fn get_buffer(&self, options: Option<EncoderOptions>) -> Result<Vec<u8>> {
-        let options = options.unwrap_or_else(|| EncoderOptions::default());
+        let options = options.unwrap_or_default();
         let mut encoder = Encoder::new_with_options((self.width, self.height), options)
             .map_err(EncoderError::EncoderError)?;
         let mut timestamp: i32 = 0;
