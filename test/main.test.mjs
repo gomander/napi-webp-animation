@@ -63,9 +63,14 @@ test('decodes webp', async () => {
   const expectedFrameSize = WIDTH * HEIGHT * 4
   const duration = Math.floor(1000 / FRAME_RATE)
   let cumulativeTimestamp = 0
-  for (const frame of decodedWebp.frames) {
+  for (let i = 0; i < decodedWebp.frames.length; i++) {
+    const frame = decodedWebp.frames[i]
     cumulativeTimestamp += duration
     assert.strictEqual(frame.data.length, expectedFrameSize)
-    assert.strictEqual(frame.timestamp, cumulativeTimestamp);
+    assert.strictEqual(frame.timestamp, cumulativeTimestamp)
+    const encoder = new WebpEncoder(WIDTH, HEIGHT)
+    encoder.addFrame(frame.data)
+    const encodedFrame = encoder.writeToFileSync(`test/output/${i + 1}.webp`)
+    assert.ok(encodedFrame.byteLength > 80000 && encodedFrame.byteLength < 90000)
   }
 })

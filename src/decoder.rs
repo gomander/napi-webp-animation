@@ -4,20 +4,20 @@ use napi_derive::napi;
 use webp_animation::Decoder;
 
 #[napi(object)]
-struct WebpFrame {
+pub struct WebpFrame {
   pub data: Buffer,
   pub timestamp: f64,
 }
 
 #[napi(object)]
-struct DecodedWebp {
+pub struct DecodedWebp {
   pub width: u32,
   pub height: u32,
   pub frames: Vec<WebpFrame>,
 }
 
 #[napi]
-fn decode_webp(buffer: Buffer) -> Result<DecodedWebp> {
+pub fn decode_webp(buffer: Buffer) -> Result<DecodedWebp> {
   match Decoder::new(&buffer) {
     Ok(decoder) => {
       let (width, height) = decoder.dimensions();

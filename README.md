@@ -55,12 +55,12 @@ encoder.getBufferSync()
 
 ## Support matrix
 
-|                  | node18 | node20 | node22 |
-| ---------------- | ------ | ------ | ------ |
-| Linux x64 gnu    | ✓      | ✓      | ✓      |
-| macOS x64        | ✓      | ✓      | ✓      |
-| macOS aarch64    | ✓      | ✓      | ✓      |
-| Windows x64      | ✓      | ✓      | ✓      |
+|                  | Node 20 | Node 22 | Node 24 |
+| ---------------- | ------- | ------- | ------- |
+| Linux x64 gnu    | ✓       | ✓       | ✓       |
+| macOS x64        | ✓       | ✓       | ✓       |
+| macOS aarch64    | ✓       | ✓       | ✓       |
+| Windows x64      | ✓       | ✓       | ✓       |
 
 I have also tested with Deno and it works, though I have not written any automated tests for Deno.
 
@@ -72,15 +72,15 @@ Particularly, I would love help setting up the CI to build for more platforms.
 
 ## Developing
 
-- If on Windows, recommend using [WSL](https://learn.microsoft.com/en-us/windows/wsl/install)
+- If on Windows, I recommend using [WSL](https://learn.microsoft.com/en-us/windows/wsl/install)
 - Install latest [Rust](https://rustup.rs/)
 - Install latest LTS [Node](https://nodejs.org/en/download)
 - Install pnpm with `npm i -g pnpm`
 - Install dependencies with `pnpm i`
 
-Make your changes, and run the tests with `pnpm test`.
+Make your changes, then compile the rust code with `pnpm build`.
 
-You can then compile the rust code with `pnpm build`.
+After building, run the tests with `pnpm test`.
 
 After running `pnpm build`, you will see a
 `napi-gif-encoder.<PLATFORM>.node` file in the project root.
