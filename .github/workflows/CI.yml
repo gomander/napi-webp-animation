@@ -66,9 +66,6 @@ jobs:
           - host: macos-latest
             target: aarch64-apple-darwin
             build: pnpm build --target aarch64-apple-darwin
-          - host: ubuntu-latest
-            target: aarch64-unknown-linux-gnu
-            build: pnpm build --target aarch64-unknown-linux-gnu --use-napi-cross
     name: stable - ${{ matrix.settings.target }} - node@24
     runs-on: ${{ matrix.settings.host }}
     steps:
@@ -158,14 +155,15 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        target:
-          - x86_64-unknown-linux-gnu
-          - aarch64-unknown-linux-gnu
+        settings:
+          - host: ubuntu-latest
+            target: x86_64-unknown-linux-gnu
+            platform: amd64
         node:
           - '20'
           - '22'
           - '24'
-    runs-on: ${{ contains(matrix.target, 'aarch64') && 'ubuntu-24.04-arm' || 'ubuntu-latest' }}
+    runs-on: ${{ matrix.settings.host }}
     steps:
       - uses: actions/checkout@v5
       - name: setup pnpm
@@ -178,21 +176,15 @@ jobs:
       - name: Output docker params
         id: docker
         run: |
-          node -e "
-            if ('${{ matrix.target }}'.startsWith('aarch64')) {
-              console.log('PLATFORM=linux/arm64')
-            } else {
-              console.log('PLATFORM=linux/amd64')
-            }
-          " >> $GITHUB_OUTPUT
-          node -e "console.log('IMAGE=node:${{ matrix.node }}-slim')" >> $GITHUB_OUTPUT
+          echo "PLATFORM=linux/${{ matrix.settings.platform }}" >> $GITHUB_OUTPUT
+          echo "IMAGE=node:${{ matrix.node }}-slim" >> $GITHUB_OUTPUT
           echo "PNPM_STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_OUTPUT
       - name: Install dependencies
         run: pnpm install --force
       - name: Download artifacts
         uses: actions/download-artifact@v6
         with:
-          name: bindings-${{ matrix.target }}
+          name: bindings-${{ matrix.settings.target }}
           path: .
       - name: List packages
         run: ls -R .
