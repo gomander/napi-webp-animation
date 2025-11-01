@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+*Nothing yet*
+
+## [0.2.0] - 2025-11-01
+
 ### Added
 
 - Added `decodeWebp` function and `DecodedWebp` and `WebpFrame` interfaces ([cbec287](https://github.com/gomander/napi-webp-animation/commit/cbec2874d22748a7d4970fef5a302ab7accd4a63))
