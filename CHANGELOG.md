@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - Renamed `JsWebpEncoderOptions` interface to `WebpEncoderOptions` ([cbec287](https://github.com/gomander/napi-webp-animation/commit/cbec2874d22748a7d4970fef5a302ab7accd4a63))
+- Minor memory and performance tweaks ([9835306](https://github.com/gomander/napi-webp-animation/commit/9835306b457610b90cc2bbdbf8ca11e37b5e6d54))
 
 ## [0.1.1] - 2025-04-16
 
