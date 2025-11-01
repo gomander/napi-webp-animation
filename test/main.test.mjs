@@ -29,33 +29,169 @@ async function getFrames() {
   return frames
 }
 
-test('encodes webp', async () => {
+async function createEncoderWithFrames() {
   const frames = await getFrames()
   const encoder = new WebpEncoder(WIDTH, HEIGHT)
-
   encoder.setFrameRate(FRAME_RATE)
-
   for (const frame of frames) {
     encoder.addFrame(frame)
   }
+  return encoder
+}
+
+test('encode lossy 0 async', async () => {
+  const encoder = await createEncoderWithFrames()
+
+  const data = await encoder.writeToFile(
+    'test/output/test-lossy-0-async.webp',
+    { lossless: false, quality: 0 }
+  )
+  assert.strictEqual(data.length, 20016)
+})
+
+test('encode lossy 0 sync', async () => {
+  const encoder = await createEncoderWithFrames()
+
   const data = encoder.writeToFileSync(
-    'test/output/test.webp',
+    'test/output/test-lossy-0-sync.webp',
+    { lossless: false, quality: 0 }
+  )
+  assert.strictEqual(data.length, 20016)
+})
+
+test('encode lossy 50 async', async () => {
+  const encoder = await createEncoderWithFrames()
+
+  const data = await encoder.writeToFile(
+    'test/output/test-lossy-50-async.webp',
+    { lossless: false, quality: 50 }
+  )
+  assert.strictEqual(data.length, 133280)
+})
+
+test('encode lossy 50 sync', async () => {
+  const encoder = await createEncoderWithFrames()
+
+  const data = encoder.writeToFileSync(
+    'test/output/test-lossy-50-sync.webp',
+    { lossless: false, quality: 50 }
+  )
+  assert.strictEqual(data.length, 133280)
+})
+
+test('encode lossy 75 async', async () => {
+  const encoder = await createEncoderWithFrames()
+
+  const data = await encoder.writeToFile(
+    'test/output/test-lossy-75-async.webp',
     { lossless: false, quality: 75 }
   )
   assert.strictEqual(data.length, 178436)
 })
 
+test('encode lossy 75 sync', async () => {
+  const encoder = await createEncoderWithFrames()
+
+  const data = encoder.writeToFileSync(
+    'test/output/test-lossy-75-sync.webp',
+    { lossless: false, quality: 75 }
+  )
+  assert.strictEqual(data.length, 178436)
+})
+
+test('encode lossy 100 async', async () => {
+  const encoder = await createEncoderWithFrames()
+
+  const data = await encoder.writeToFile(
+    'test/output/test-lossy-100-async.webp',
+    { lossless: false, quality: 100 }
+  )
+  assert.strictEqual(data.length, 556672)
+})
+
+test('encode lossy 100 sync', async () => {
+  const encoder = await createEncoderWithFrames()
+
+  const data = encoder.writeToFileSync(
+    'test/output/test-lossy-100-sync.webp',
+    { lossless: false, quality: 100 }
+  )
+  assert.strictEqual(data.length, 556672)
+})
+
+test('encode lossless 0 async', async () => {
+  const encoder = await createEncoderWithFrames()
+
+  const data = await encoder.writeToFile(
+    'test/output/test-lossless-0-async.webp',
+    { lossless: true, quality: 0 }
+  )
+  assert.strictEqual(data.length, 1229542)
+})
+
+test('encode lossless 0 sync', async () => {
+  const encoder = await createEncoderWithFrames()
+
+  const data = encoder.writeToFileSync(
+    'test/output/test-lossless-0-sync.webp',
+    { lossless: true, quality: 0 }
+  )
+  assert.strictEqual(data.length, 1229542)
+})
+
+test('encode lossless 50 async', async () => {
+  const encoder = await createEncoderWithFrames()
+
+  const data = await encoder.writeToFile(
+    'test/output/test-lossless-50-async.webp',
+    { lossless: true, quality: 50 }
+  )
+  assert.strictEqual(data.length, 1173638)
+})
+
+test('encode lossless 50 sync', async () => {
+  const encoder = await createEncoderWithFrames()
+
+  const data = encoder.writeToFileSync(
+    'test/output/test-lossless-50-sync.webp',
+    { lossless: true, quality: 50 }
+  )
+  assert.strictEqual(data.length, 1173638)
+})
+
+test('encode lossless 100 async', async () => {
+  const encoder = await createEncoderWithFrames()
+
+  const data = await encoder.writeToFile(
+    'test/output/test-lossless-100-async.webp',
+    { lossless: true, quality: 100 }
+  )
+  assert.strictEqual(data.length, 1169022)
+})
+
+test('encode lossless 100 sync', async () => {
+  const encoder = await createEncoderWithFrames()
+
+  const data = encoder.writeToFileSync(
+    'test/output/test-lossless-100-sync.webp',
+    { lossless: true, quality: 100 }
+  )
+  assert.strictEqual(data.length, 1169022)
+})
+
 /**
  * Test values:
- * lossy 50: 133280
- * lossy 75:  178436
- * lossless 0: 1229416
- * lossless 50: 1173410
- * lossless 100: 1168740
+ * lossy 0:        20016
+ * lossy 50:      133280
+ * lossy 75:      178436
+ * lossy 100:     556672
+ * lossless 0:   1229542
+ * lossless 50:  1173638
+ * lossless 100: 1169022
  */
 
 test('decodes webp', async () => {
-  const buffer = await fs.readFile('test/output/test.webp')
+  const buffer = await fs.readFile('test/output/test-lossy-75-sync.webp')
   const decodedWebp = decodeWebp(buffer)
   assert.strictEqual(decodedWebp.width, WIDTH)
   assert.strictEqual(decodedWebp.height, HEIGHT)
@@ -70,7 +206,7 @@ test('decodes webp', async () => {
     assert.strictEqual(frame.timestamp, cumulativeTimestamp)
     const encoder = new WebpEncoder(WIDTH, HEIGHT)
     encoder.addFrame(frame.data)
-    const encodedFrame = encoder.writeToFileSync(`test/output/${i + 1}.webp`)
+    const encodedFrame = await encoder.writeToFile(`test/output/${i + 1}.webp`)
     assert.ok(encodedFrame.byteLength > 80000 && encodedFrame.byteLength < 90000)
   }
 })
