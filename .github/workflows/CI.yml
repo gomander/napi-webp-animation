@@ -105,7 +105,7 @@ jobs:
           path: '*.node'
           if-no-files-found: error
   test-macOS-windows-binding:
-    name: Test bindings on ${{ matrix.settings.target }} - node@${{ matrix.node }}
+    name: Test - ${{ matrix.settings.target }} - node@${{ matrix.node }}
     needs:
       - build
     strategy:
@@ -149,7 +149,7 @@ jobs:
       - name: Test bindings
         run: pnpm test
   test-linux-binding:
-    name: Test ${{ matrix.target }} - node@${{ matrix.node }}
+    name: Test - ${{ matrix.settings.target }} - node@${{ matrix.node }}
     needs:
       - build
     strategy:
