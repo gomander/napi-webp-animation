@@ -12,15 +12,6 @@ struct WebpEncoderFrame {
   duration: Option<f64>,
 }
 
-impl Clone for WebpEncoderFrame {
-  fn clone(&self) -> Self {
-    WebpEncoderFrame {
-      frame_data: self.frame_data.clone(),
-      duration: self.duration,
-    }
-  }
-}
-
 pub struct WebpEncoder {
   width: u32,
   height: u32,
@@ -89,15 +80,6 @@ impl WebpEncoder {
     self.width = width;
     self.height = height;
   }
-
-  pub fn clone(&self) -> Self {
-    WebpEncoder {
-      width: self.width,
-      height: self.height,
-      frame_rate: self.frame_rate,
-      frames: self.frames.clone(),
-    }
-  }
 }
 
 #[napi(object, js_name = "WebpEncoderOptions")]
@@ -107,18 +89,18 @@ pub struct JsWebpEncoderOptions {
   pub loop_count: Option<i32>,
 }
 
-pub struct AsyncGetBuffer {
-  encoder: WebpEncoder,
+pub struct AsyncGetBuffer<'a> {
+  encoder: &'a WebpEncoder,
   options: Option<EncoderOptions>,
 }
 
 #[napi]
-impl Task for AsyncGetBuffer {
+impl<'a> Task for AsyncGetBuffer<'a> {
   type Output = Vec<u8>;
   type JsValue = Buffer;
 
   fn compute(&mut self) -> Result<Self::Output> {
-    self.encoder.get_buffer(self.options.clone())
+    self.encoder.get_buffer(self.options.take())
   }
 
   fn resolve(&mut self, _: Env, output: Self::Output) -> Result<Self::JsValue> {
@@ -126,21 +108,21 @@ impl Task for AsyncGetBuffer {
   }
 }
 
-pub struct AsyncWriteToFile {
-  encoder: WebpEncoder,
+pub struct AsyncWriteToFile<'a> {
+  encoder: &'a mut WebpEncoder,
   path: String,
   options: Option<EncoderOptions>,
 }
 
 #[napi]
-impl Task for AsyncWriteToFile {
+impl<'a> Task for AsyncWriteToFile<'a> {
   type Output = Vec<u8>;
   type JsValue = Buffer;
 
   fn compute(&mut self) -> Result<Self::Output> {
     self
       .encoder
-      .write_to_file(self.path.clone(), self.options.clone())
+      .write_to_file(self.path.clone(), self.options.take())
   }
 
   fn resolve(&mut self, _: Env, output: Self::Output) -> Result<Self::JsValue> {
@@ -178,11 +160,11 @@ impl JsWebpEncoder {
 
   #[napi]
   pub fn get_buffer(
-    &self,
+    &'_ self,
     #[napi(ts_arg_type = "WebpEncoderOptions")] options: Option<JsWebpEncoderOptions>,
-  ) -> AsyncTask<AsyncGetBuffer> {
+  ) -> AsyncTask<AsyncGetBuffer<'_>> {
     AsyncTask::new(AsyncGetBuffer {
-      encoder: self.encoder.clone(),
+      encoder: &self.encoder,
       options: options.map(map_js_webp_encoder_options),
     })
   }
@@ -202,12 +184,12 @@ impl JsWebpEncoder {
 
   #[napi]
   pub fn write_to_file(
-    &self,
+    &'_ mut self,
     path: String,
     #[napi(ts_arg_type = "WebpEncoderOptions")] options: Option<JsWebpEncoderOptions>,
-  ) -> AsyncTask<AsyncWriteToFile> {
+  ) -> AsyncTask<AsyncWriteToFile<'_>> {
     AsyncTask::new(AsyncWriteToFile {
-      encoder: self.encoder.clone(),
+      encoder: &mut self.encoder,
       path,
       options: options.map(map_js_webp_encoder_options),
     })
