@@ -14,17 +14,17 @@ const FRAME_COUNT = 17
 const FRAME_RATE = 24
 
 const testValues = {
-  lossy: [
-    { quality: 0, sizes: [20016] },
-    { quality: 50, sizes: [133280] },
-    { quality: 75, sizes: [178436] },
-    { quality: 100, sizes: [556672] }
-  ],
-  lossless: [
-    { quality: 0, sizes: [1229416, 1229542] },
-    { quality: 50, sizes: [1173410, 1173638] },
-    { quality: 100, sizes: [1168740, 1169022] }
-  ]
+  lossy: {
+    0: [20016],
+    50: [133280],
+    75: [178436],
+    100: [556672]
+  },
+  lossless: {
+    0: [1229416, 1229542],
+    50: [1173410, 1173638],
+    100: [1168740, 1169022]
+  }
 }
 
 /** @returns {Promise<Buffer[]>} */
@@ -33,7 +33,8 @@ async function getFrames() {
   const frames = []
   const ctx = new Canvas(WIDTH, HEIGHT).getContext('2d')
   for (let i = 1; i <= FRAME_COUNT; i++) {
-    const path = `${dirname(fileURLToPath(import.meta.url))}/fixtures/frames/${i}.png`
+    const path =
+      `${dirname(fileURLToPath(import.meta.url))}/fixtures/frames/${i}.png`
     const file = await fs.readFile(path)
     const img = await loadImage(file)
     ctx.drawImage(img, 0, 0)
@@ -53,32 +54,36 @@ async function createEncoderWithFrames() {
   return encoder
 }
 
-for (const mode of /** @type {const} */ (['lossy', 'lossless'])) {
-  for (const { quality, sizes } of testValues[mode]) {
-    test(`Encode ${mode} ${quality} async`, async () => {
-      const encoder = await createEncoderWithFrames()
-
-      const data = await encoder.writeToFile(
-        `test/output/test-${mode}-${quality}-async.webp`,
-        { lossless: mode === 'lossless', quality }
+for (const encodingMode of /** @type {const} */ (['lossy', 'lossless'])) {
+  for (const [quality, sizes] of Object.entries(testValues[encodingMode])) {
+    for (const syncMode of /** @type {const} */ (['async', 'sync'])) {
+      const path = `test/output/${encodingMode}-${quality}-${syncMode}.webp`
+      const options = /** @type {import('../index.js').WebpEncoderOptions} */ ({
+        lossless: encodingMode === 'lossless',
+        quality: Number(quality)
+      })
+      const paddedEncodingMode = encodingMode.padStart('lossless'.length)
+      const paddedQuality = quality.padStart('100'.length)
+      const paddedSyncMode = syncMode.padStart('async'.length)
+      test(
+        `Encode | ${paddedEncodingMode} | ${paddedQuality} | ${paddedSyncMode}`,
+        async () => {
+          const encoder = await createEncoderWithFrames()
+          const data = syncMode === 'async'
+            ? await encoder.writeToFile(path, options)
+            : encoder.writeToFileSync(path, options)
+          assert.ok(
+            sizes.includes(data.byteLength),
+            `Encoded size ${data.byteLength} not in expected sizes`
+          )
+        }
       )
-      assert.ok(sizes.includes(data.length))
-    })
-
-    test(`Encode ${mode} ${quality} sync`, async () => {
-      const encoder = await createEncoderWithFrames()
-
-      const data = encoder.writeToFileSync(
-        `test/output/test-${mode}-${quality}-sync.webp`,
-        { lossless: mode === 'lossless', quality }
-      )
-      assert.ok(sizes.includes(data.length))
-    })
+    }
   }
 }
 
 test('Decodes WebP', async () => {
-  const buffer = await fs.readFile('test/output/test-lossy-75-sync.webp')
+  const buffer = await fs.readFile('test/output/lossy-75-sync.webp')
   const decodedWebp = decodeWebp(buffer)
   assert.strictEqual(decodedWebp.width, WIDTH)
   assert.strictEqual(decodedWebp.height, HEIGHT)
@@ -93,7 +98,10 @@ test('Decodes WebP', async () => {
     assert.strictEqual(frame.timestamp, cumulativeTimestamp)
     const encoder = new WebpEncoder(WIDTH, HEIGHT)
     encoder.addFrame(frame.data)
-    const encodedFrame = await encoder.writeToFile(`test/output/${i + 1}.webp`)
-    assert.ok(encodedFrame.byteLength > 80000 && encodedFrame.byteLength < 90000)
+    const encodedWebp = await encoder.writeToFile(`test/output/${i + 1}.webp`)
+    assert.ok(
+      encodedWebp.byteLength > 80000 && encodedWebp.byteLength < 90000,
+      `Encoded frame size ${encodedWebp.byteLength} out of expected range`
+    )
   }
 })
