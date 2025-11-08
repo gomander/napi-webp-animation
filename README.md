@@ -64,6 +64,10 @@ encoder.getBufferSync()
 
 I have also tested with Deno and it works, though I have not written any automated tests for Deno.
 
+## Changelog
+
+This project's changelog can be found in [CHANGELOG.md](https://github.com/gomander/napi-webp-animation/blob/main/CHANGELOG.md).
+
 ## Contributing
 
 Issues and pull requests are welcome!
