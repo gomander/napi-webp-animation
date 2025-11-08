@@ -9,6 +9,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 *Nothing yet*
 
+## [0.2.1] - 2025-11-08
+
+### Fixed
+
+- Enforced a minimum 1ms duration for each frame to prevent encoding errors ([0c1e13d](https://github.com/gomander/napi-webp-animation/commit/0c1e13d0db50ad46242eaf6e05b3478fc462c588))
+
 ## [0.2.0] - 2025-11-01
 
 ### Added
