@@ -49,7 +49,10 @@ impl WebpEncoder {
       encoder
         .add_frame(&frame.frame_data, timestamp)
         .map_err(EncoderError::EncoderError)?;
-      timestamp += frame.duration.unwrap_or(1000. / (self.frame_rate as f64)) as i32;
+      timestamp += frame
+        .duration
+        .unwrap_or(1000. / (self.frame_rate as f64))
+        .max(1.0) as i32;
     }
     Ok(
       encoder
