@@ -1,6 +1,6 @@
 {
   "name": "napi-webp-animation",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "A fully typed WebP animation package for NodeJS using Rust",
   "author": "Gunnar Omander <gunnar@gomander.dev> (https://gomander.dev)",
   "license": "MIT",
