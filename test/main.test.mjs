@@ -1,9 +1,11 @@
+// @ts-check
+
 import assert from 'node:assert'
 import fs from 'node:fs/promises'
 import { dirname } from 'node:path'
 import test from 'node:test'
 import { fileURLToPath } from 'node:url'
-import { WebpEncoder, decodeWebp, type WebpEncoderOptions } from '../index.js'
+import { WebpEncoder, decodeWebp } from '../index.js'
 import { Canvas, loadImage } from '@napi-rs/canvas'
 
 const WIDTH = 480
@@ -23,10 +25,12 @@ const testValues = {
     50: [1173410, 1173638],
     100: [1168740, 1169022]
   }
-} as const
+}
 
+/** @returns {Promise<Buffer[]>} */
 async function getFrames() {
-  const frames: Buffer[] = []
+  /** @type {Buffer[]} */
+  const frames = []
   const ctx = new Canvas(WIDTH, HEIGHT).getContext('2d')
   for (let i = 1; i <= FRAME_COUNT; i++) {
     const path =
@@ -50,14 +54,14 @@ async function createEncoderWithFrames() {
   return encoder
 }
 
-for (const encodingMode of ['lossy', 'lossless'] as const) {
+for (const encodingMode of /** @type {const} */ (['lossy', 'lossless'])) {
   for (const [quality, sizes] of Object.entries(testValues[encodingMode])) {
-    for (const syncMode of ['async', 'sync'] as const) {
+    for (const syncMode of /** @type {const} */ (['async', 'sync'])) {
       const path = `test/output/${encodingMode}-${quality}-${syncMode}.webp`
-      const options: WebpEncoderOptions = {
+      const options = /** @type {import('../index.js').WebpEncoderOptions} */ ({
         lossless: encodingMode === 'lossless',
         quality: Number(quality)
-      }
+      })
       const paddedEncodingMode = encodingMode.padStart('lossless'.length)
       const paddedQuality = quality.padStart('100'.length)
       const paddedSyncMode = syncMode.padStart('async'.length)
