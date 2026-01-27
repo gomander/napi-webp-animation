@@ -9,29 +9,29 @@ importers:
   .:
     devDependencies:
       '@napi-rs/canvas':
-        specifier: ~0.1.84
-        version: 0.1.84
+        specifier: ~0.1.88
+        version: 0.1.88
       '@napi-rs/cli':
-        specifier: ^3.5.0
-        version: 3.5.0(@emnapi/runtime@1.7.1)(@types/node@24.10.3)
+        specifier: ^3.5.1
+        version: 3.5.1(@emnapi/runtime@1.7.1)(@types/node@24.10.9)
       '@napi-rs/wasm-runtime':
-        specifier: ^1.1.0
-        version: 1.1.0
+        specifier: ^1.1.1
+        version: 1.1.1
       '@taplo/cli':
         specifier: ^0.7.0
         version: 0.7.0
       '@types/node':
-        specifier: ^24.10.3
-        version: 24.10.3
+        specifier: ^24.10.9
+        version: 24.10.9
       npm-run-all2:
         specifier: ^8.0.4
         version: 8.0.4
       oxlint:
-        specifier: ^1.32.0
-        version: 1.32.0
+        specifier: ^1.42.0
+        version: 1.42.0
       prettier:
-        specifier: ^3.7.4
-        version: 3.7.4
+        specifier: ^3.8.1
+        version: 3.8.1
       typescript:
         specifier: ^5.9.3
         version: 5.9.3
@@ -181,72 +181,78 @@ packages:
       '@types/node':
         optional: true
 
-  '@napi-rs/canvas-android-arm64@0.1.84':
-    resolution: {integrity: sha512-pdvuqvj3qtwVryqgpAGornJLV6Ezpk39V6wT4JCnRVGy8I3Tk1au8qOalFGrx/r0Ig87hWslysPpHBxVpBMIww==}
+  '@napi-rs/canvas-android-arm64@0.1.88':
+    resolution: {integrity: sha512-KEaClPnZuVxJ8smUWjV1wWFkByBO/D+vy4lN+Dm5DFH514oqwukxKGeck9xcKJhaWJGjfruGmYGiwRe//+/zQQ==}
     engines: {node: '>= 10'}
     cpu: [arm64]
     os: [android]
 
-  '@napi-rs/canvas-darwin-arm64@0.1.84':
-    resolution: {integrity: sha512-A8IND3Hnv0R6abc6qCcCaOCujTLMmGxtucMTZ5vbQUrEN/scxi378MyTLtyWg+MRr6bwQJ6v/orqMS9datIcww==}
+  '@napi-rs/canvas-darwin-arm64@0.1.88':
+    resolution: {integrity: sha512-Xgywz0dDxOKSgx3eZnK85WgGMmGrQEW7ZLA/E7raZdlEE+xXCozobgqz2ZvYigpB6DJFYkqnwHjqCOTSDGlFdg==}
     engines: {node: '>= 10'}
     cpu: [arm64]
     os: [darwin]
 
-  '@napi-rs/canvas-darwin-x64@0.1.84':
-    resolution: {integrity: sha512-AUW45lJhYWwnA74LaNeqhvqYKK/2hNnBBBl03KRdqeCD4tKneUSrxUqIv8d22CBweOvrAASyKN3W87WO2zEr/A==}
+  '@napi-rs/canvas-darwin-x64@0.1.88':
+    resolution: {integrity: sha512-Yz4wSCIQOUgNucgk+8NFtQxQxZV5NO8VKRl9ePKE6XoNyNVC8JDqtvhh3b3TPqKK8W5p2EQpAr1rjjm0mfBxdg==}
     engines: {node: '>= 10'}
     cpu: [x64]
     os: [darwin]
 
-  '@napi-rs/canvas-linux-arm-gnueabihf@0.1.84':
-    resolution: {integrity: sha512-8zs5ZqOrdgs4FioTxSBrkl/wHZB56bJNBqaIsfPL4ZkEQCinOkrFF7xIcXiHiKp93J3wUtbIzeVrhTIaWwqk+A==}
+  '@napi-rs/canvas-linux-arm-gnueabihf@0.1.88':
+    resolution: {integrity: sha512-9gQM2SlTo76hYhxHi2XxWTAqpTOb+JtxMPEIr+H5nAhHhyEtNmTSDRtz93SP7mGd2G3Ojf2oF5tP9OdgtgXyKg==}
     engines: {node: '>= 10'}
     cpu: [arm]
     os: [linux]
 
-  '@napi-rs/canvas-linux-arm64-gnu@0.1.84':
-    resolution: {integrity: sha512-i204vtowOglJUpbAFWU5mqsJgH0lVpNk/Ml4mQtB4Lndd86oF+Otr6Mr5KQnZHqYGhlSIKiU2SYnUbhO28zGQA==}
+  '@napi-rs/canvas-linux-arm64-gnu@0.1.88':
+    resolution: {integrity: sha512-7qgaOBMXuVRk9Fzztzr3BchQKXDxGbY+nwsovD3I/Sx81e+sX0ReEDYHTItNb0Je4NHbAl7D0MKyd4SvUc04sg==}
     engines: {node: '>= 10'}
     cpu: [arm64]
     os: [linux]
 
-  '@napi-rs/canvas-linux-arm64-musl@0.1.84':
-    resolution: {integrity: sha512-VyZq0EEw+OILnWk7G3ZgLLPaz1ERaPP++jLjeyLMbFOF+Tr4zHzWKiKDsEV/cT7btLPZbVoR3VX+T9/QubnURQ==}
+  '@napi-rs/canvas-linux-arm64-musl@0.1.88':
+    resolution: {integrity: sha512-kYyNrUsHLkoGHBc77u4Unh067GrfiCUMbGHC2+OTxbeWfZkPt2o32UOQkhnSswKd9Fko/wSqqGkY956bIUzruA==}
     engines: {node: '>= 10'}
     cpu: [arm64]
     os: [linux]
 
-  '@napi-rs/canvas-linux-riscv64-gnu@0.1.84':
-    resolution: {integrity: sha512-PSMTh8DiThvLRsbtc/a065I/ceZk17EXAATv9uNvHgkgo7wdEfTh2C3aveNkBMGByVO3tvnvD5v/YFtZL07cIg==}
+  '@napi-rs/canvas-linux-riscv64-gnu@0.1.88':
+    resolution: {integrity: sha512-HVuH7QgzB0yavYdNZDRyAsn/ejoXB0hn8twwFnOqUbCCdkV+REna7RXjSR7+PdfW0qMQ2YYWsLvVBT5iL/mGpw==}
     engines: {node: '>= 10'}
     cpu: [riscv64]
     os: [linux]
 
-  '@napi-rs/canvas-linux-x64-gnu@0.1.84':
-    resolution: {integrity: sha512-N1GY3noO1oqgEo3rYQIwY44kfM11vA0lDbN0orTOHfCSUZTUyiYCY0nZ197QMahZBm1aR/vYgsWpV74MMMDuNA==}
+  '@napi-rs/canvas-linux-x64-gnu@0.1.88':
+    resolution: {integrity: sha512-hvcvKIcPEQrvvJtJnwD35B3qk6umFJ8dFIr8bSymfrSMem0EQsfn1ztys8ETIFndTwdNWJKWluvxztA41ivsEw==}
     engines: {node: '>= 10'}
     cpu: [x64]
     os: [linux]
 
-  '@napi-rs/canvas-linux-x64-musl@0.1.84':
-    resolution: {integrity: sha512-vUZmua6ADqTWyHyei81aXIt9wp0yjeNwTH0KdhdeoBb6azHmFR8uKTukZMXfLCC3bnsW0t4lW7K78KNMknmtjg==}
+  '@napi-rs/canvas-linux-x64-musl@0.1.88':
+    resolution: {integrity: sha512-eSMpGYY2xnZSQ6UxYJ6plDboxq4KeJ4zT5HaVkUnbObNN6DlbJe0Mclh3wifAmquXfrlgTZt6zhHsUgz++AK6g==}
     engines: {node: '>= 10'}
     cpu: [x64]
     os: [linux]
 
-  '@napi-rs/canvas-win32-x64-msvc@0.1.84':
-    resolution: {integrity: sha512-YSs8ncurc1xzegUMNnQUTYrdrAuaXdPMOa+iYYyAxydOtg0ppV386hyYMsy00Yip1NlTgLCseRG4sHSnjQx6og==}
+  '@napi-rs/canvas-win32-arm64-msvc@0.1.88':
+    resolution: {integrity: sha512-qcIFfEgHrchyYqRrxsCeTQgpJZ/GqHiqPcU/Fvw/ARVlQeDX1VyFH+X+0gCR2tca6UJrq96vnW+5o7buCq+erA==}
+    engines: {node: '>= 10'}
+    cpu: [arm64]
+    os: [win32]
+
+  '@napi-rs/canvas-win32-x64-msvc@0.1.88':
+    resolution: {integrity: sha512-ROVqbfS4QyZxYkqmaIBBpbz/BQvAR+05FXM5PAtTYVc0uyY8Y4BHJSMdGAaMf6TdIVRsQsiq+FG/dH9XhvWCFQ==}
     engines: {node: '>= 10'}
     cpu: [x64]
     os: [win32]
 
-  '@napi-rs/canvas@0.1.84':
-    resolution: {integrity: sha512-88FTNFs4uuiFKP0tUrPsEXhpe9dg7za9ILZJE08pGdUveMIDeana1zwfVkqRHJDPJFAmGY3dXmJ99dzsy57YnA==}
+  '@napi-rs/canvas@0.1.88':
+    resolution: {integrity: sha512-/p08f93LEbsL5mDZFQ3DBxcPv/I4QG9EDYRRq1WNlCOXVfAHBTHMSVMwxlqG/AtnSfUr9+vgfN7MKiyDo0+Weg==}
     engines: {node: '>= 10'}
 
-  '@napi-rs/cli@3.5.0':
-    resolution: {integrity: sha512-bJsDvAa9qK9VMkFhr780XWfQlK+GDlAX8qpK20buSmA0ld6nxCtiZ5a0J45zbd0FWT+VTZE1/u8VPH2vLfnVvw==}
+  '@napi-rs/cli@3.5.1':
+    resolution: {integrity: sha512-XBfLQRDcB3qhu6bazdMJsecWW55kR85l5/k0af9BIBELXQSsCFU0fzug7PX8eQp6vVdm7W/U3z6uP5WmITB2Gw==}
     engines: {node: '>= 16'}
     hasBin: true
     peerDependencies:
@@ -494,8 +500,8 @@ packages:
     resolution: {integrity: sha512-7cmzIu+Vbupriudo7UudoMRH2OA3cTw67vva8MxeoAe5S7vPFI7z0vp0pMXiA25S8IUJefImQ90FeJjl8fjEaQ==}
     engines: {node: '>= 10'}
 
-  '@napi-rs/wasm-runtime@1.1.0':
-    resolution: {integrity: sha512-Fq6DJW+Bb5jaWE69/qOE0D1TUN9+6uWhCeZpdnSBk14pjLcCWR7Q8n49PTSPHazM37JqrsdpEthXy2xn6jWWiA==}
+  '@napi-rs/wasm-runtime@1.1.1':
+    resolution: {integrity: sha512-p64ah1M1ld8xjWv3qbvFwHiFVWrq1yFvV4f7w+mzaqiR4IlSgkqhcRdHwsGgomwzBH51sRY4NEowLxnaBjcW/A==}
 
   '@napi-rs/wasm-tools-android-arm-eabi@1.0.1':
     resolution: {integrity: sha512-lr07E/l571Gft5v4aA1dI8koJEmF1F0UigBbsqg9OWNzg80H3lDPO+auv85y3T/NHE3GirDk7x/D3sLO57vayw==}
@@ -630,43 +636,43 @@ packages:
   '@octokit/types@16.0.0':
     resolution: {integrity: sha512-sKq+9r1Mm4efXW1FCk7hFSeJo4QKreL/tTbR0rz/qx/r1Oa2VV83LTA/H/MuCOX7uCIJmQVRKBcbmWoySjAnSg==}
 
-  '@oxlint/darwin-arm64@1.32.0':
-    resolution: {integrity: sha512-yrqPmZYu5Qb+49h0P5EXVIq8VxYkDDM6ZQrWzlh16+UGFcD8HOXs4oF3g9RyfaoAbShLCXooSQsM/Ifwx8E/eQ==}
+  '@oxlint/darwin-arm64@1.42.0':
+    resolution: {integrity: sha512-ui5CdAcDsXPQwZQEXOOSWsilJWhgj9jqHCvYBm2tDE8zfwZZuF9q58+hGKH1x5y0SV4sRlyobB2Quq6uU6EgeA==}
     cpu: [arm64]
     os: [darwin]
 
-  '@oxlint/darwin-x64@1.32.0':
-    resolution: {integrity: sha512-pQRZrJG/2nAKc3IuocFbaFFbTDlQsjz2WfivRsMn0hw65EEsSuM84WMFMiAfLpTGyTICeUtHZLHlrM5lzVr36A==}
+  '@oxlint/darwin-x64@1.42.0':
+    resolution: {integrity: sha512-wo0M/hcpHRv7vFje99zHHqheOhVEwUOKjOgBKyi0M99xcLizv04kcSm1rTd6HSCeZgOtiJYZRVAlKhQOQw2byQ==}
     cpu: [x64]
     os: [darwin]
 
-  '@oxlint/linux-arm64-gnu@1.32.0':
-    resolution: {integrity: sha512-tyomSmU2DzwcTmbaWFmStHgVfRmJDDvqcIvcw4fRB1YlL2Qg/XaM4NJ0m2bdTap38gxD5FSxSgCo0DkQ8GTolg==}
+  '@oxlint/linux-arm64-gnu@1.42.0':
+    resolution: {integrity: sha512-j4QzfCM8ks+OyM+KKYWDiBEQsm5RCW50H1Wz16wUyoFsobJ+X5qqcJxq6HvkE07m8euYmZelyB0WqsiDoz1v8g==}
     cpu: [arm64]
     os: [linux]
 
-  '@oxlint/linux-arm64-musl@1.32.0':
-    resolution: {integrity: sha512-0W46dRMaf71OGE4+Rd+GHfS1uF/UODl5Mef6871pMhN7opPGfTI2fKJxh9VzRhXeSYXW/Z1EuCq9yCfmIJq+5Q==}
+  '@oxlint/linux-arm64-musl@1.42.0':
+    resolution: {integrity: sha512-g5b1Uw7zo6yw4Ymzyd1etKzAY7xAaGA3scwB8tAp3QzuY7CYdfTwlhiLKSAKbd7T/JBgxOXAGNcLDorJyVTXcg==}
     cpu: [arm64]
     os: [linux]
 
-  '@oxlint/linux-x64-gnu@1.32.0':
-    resolution: {integrity: sha512-5+6myVCBOMvM62rDB9T3CARXUvIwhGqte6E+HoKRwYaqsxGUZ4bh3pItSgSFwHjLGPrvADS11qJUkk39eQQBzQ==}
+  '@oxlint/linux-x64-gnu@1.42.0':
+    resolution: {integrity: sha512-HnD99GD9qAbpV4q9iQil7mXZUJFpoBdDavfcC2CgGLPlawfcV5COzQPNwOgvPVkr7C0cBx6uNCq3S6r9IIiEIg==}
     cpu: [x64]
     os: [linux]
 
-  '@oxlint/linux-x64-musl@1.32.0':
-    resolution: {integrity: sha512-qwQlwYYgVIC6ScjpUwiKKNyVdUlJckrfwPVpIjC9mvglIQeIjKuuyaDxUZWIOc/rEzeCV/tW6tcbehLkfEzqsw==}
+  '@oxlint/linux-x64-musl@1.42.0':
+    resolution: {integrity: sha512-8NTe8A78HHFn+nBi+8qMwIjgv9oIBh+9zqCPNLH56ah4vKOPvbePLI6NIv9qSkmzrBuu8SB+FJ2TH/G05UzbNA==}
     cpu: [x64]
     os: [linux]
 
-  '@oxlint/win32-arm64@1.32.0':
-    resolution: {integrity: sha512-7qYZF9CiXGtdv8Z/fBkgB5idD2Zokht67I5DKWH0fZS/2R232sDqW2JpWVkXltk0+9yFvmvJ0ouJgQRl9M3S2g==}
+  '@oxlint/win32-arm64@1.42.0':
+    resolution: {integrity: sha512-lAPS2YAuu+qFqoTNPFcNsxXjwSV0M+dOgAzzVTAN7Yo2ifj+oLOx0GsntWoM78PvQWI7Q827ZxqtU2ImBmDapA==}
     cpu: [arm64]
     os: [win32]
 
-  '@oxlint/win32-x64@1.32.0':
-    resolution: {integrity: sha512-XW1xqCj34MEGJlHteqasTZ/LmBrwYIgluhNW0aP+XWkn90+stKAq3W/40dvJKbMK9F7o09LPCuMVtUW7FIUuiA==}
+  '@oxlint/win32-x64@1.42.0':
+    resolution: {integrity: sha512-3/KmyUOHNriL6rLpaFfm9RJxdhpXY2/Ehx9UuorJr2pUA+lrZL15FAEx/DOszYm5r10hfzj40+efAHcCilNvSQ==}
     cpu: [x64]
     os: [win32]
 
@@ -677,8 +683,8 @@ packages:
   '@tybys/wasm-util@0.10.1':
     resolution: {integrity: sha512-9tTaPJLSiejZKx+Bmog4uSubteqTvFrVrURwkmHixBo0G4seD0zUxp98E1DzUBJxLQ3NPwXrGKDiVjwx/DpPsg==}
 
-  '@types/node@24.10.3':
-    resolution: {integrity: sha512-gqkrWUsS8hcm0r44yn7/xZeV1ERva/nLgrLxFRUGb7aoNMIJfZJ3AC261zDQuOAKC7MiXai1WCpYc48jAHoShQ==}
+  '@types/node@24.10.9':
+    resolution: {integrity: sha512-ne4A0IpG3+2ETuREInjPNhUGis1SFjv1d5asp8MzEAGtOZeTeHVDOYqOgqfhvseqg/iXty2hjBf1zAOb7RNiNw==}
 
   ansi-regex@6.2.2:
     resolution: {integrity: sha512-Bq3SmSpyFHaWjPk8If9yc6svM8c56dB5BAtW4Qbw5jHTwwXXcTLoRMkpDJp6VL0XzlWaCHTXrkFURMYmD0sLqg==}
@@ -785,12 +791,12 @@ packages:
   obug@2.1.1:
     resolution: {integrity: sha512-uTqF9MuPraAQ+IsnPf366RG4cP9RtUi7MLO1N3KEc+wb0a6yKpeL0lmk2IB1jY5KHPAlTc6T/JRdC/YqxHNwkQ==}
 
-  oxlint@1.32.0:
-    resolution: {integrity: sha512-HYDQCga7flsdyLMUIxTgSnEx5KBxpP9VINB8NgO+UjV80xBiTQXyVsvjtneMT3ZBLMbL0SlG/Dm03XQAsEshMA==}
+  oxlint@1.42.0:
+    resolution: {integrity: sha512-qnspC/lrp8FgKNaONLLn14dm+W5t0SSlus6V5NJpgI2YNT1tkFYZt4fBf14ESxf9AAh98WBASnW5f0gtw462Lg==}
     engines: {node: ^20.19.0 || >=22.12.0}
     hasBin: true
     peerDependencies:
-      oxlint-tsgolint: '>=0.8.1'
+      oxlint-tsgolint: '>=0.11.2'
     peerDependenciesMeta:
       oxlint-tsgolint:
         optional: true
@@ -808,8 +814,8 @@ packages:
     engines: {node: '>=0.10'}
     hasBin: true
 
-  prettier@3.7.4:
-    resolution: {integrity: sha512-v6UNi1+3hSlVvv8fSaoUbggEM5VErKmmpGA7Pl3HF8V6uKY7rvClBOJlH6yNwQtfTueNkGVpOv/mtWL9L4bgRA==}
+  prettier@3.8.1:
+    resolution: {integrity: sha512-UOnG6LftzbdaHZcKoPFtOcCKztrQ57WkHDeRD9t/PTQtmT0NHSeWWepj6pS0z/N7+08BHFDQVUrfmfMRcZwbMg==}
     engines: {node: '>=14'}
     hasBin: true
 
@@ -897,169 +903,173 @@ snapshots:
 
   '@inquirer/ansi@2.0.2': {}
 
-  '@inquirer/checkbox@5.0.2(@types/node@24.10.3)':
+  '@inquirer/checkbox@5.0.2(@types/node@24.10.9)':
     dependencies:
       '@inquirer/ansi': 2.0.2
-      '@inquirer/core': 11.0.2(@types/node@24.10.3)
+      '@inquirer/core': 11.0.2(@types/node@24.10.9)
       '@inquirer/figures': 2.0.2
-      '@inquirer/type': 4.0.2(@types/node@24.10.3)
+      '@inquirer/type': 4.0.2(@types/node@24.10.9)
     optionalDependencies:
-      '@types/node': 24.10.3
+      '@types/node': 24.10.9
 
-  '@inquirer/confirm@6.0.2(@types/node@24.10.3)':
+  '@inquirer/confirm@6.0.2(@types/node@24.10.9)':
     dependencies:
-      '@inquirer/core': 11.0.2(@types/node@24.10.3)
-      '@inquirer/type': 4.0.2(@types/node@24.10.3)
+      '@inquirer/core': 11.0.2(@types/node@24.10.9)
+      '@inquirer/type': 4.0.2(@types/node@24.10.9)
     optionalDependencies:
-      '@types/node': 24.10.3
+      '@types/node': 24.10.9
 
-  '@inquirer/core@11.0.2(@types/node@24.10.3)':
+  '@inquirer/core@11.0.2(@types/node@24.10.9)':
     dependencies:
       '@inquirer/ansi': 2.0.2
       '@inquirer/figures': 2.0.2
-      '@inquirer/type': 4.0.2(@types/node@24.10.3)
+      '@inquirer/type': 4.0.2(@types/node@24.10.9)
       cli-width: 4.1.0
       mute-stream: 3.0.0
       signal-exit: 4.1.0
       wrap-ansi: 9.0.2
     optionalDependencies:
-      '@types/node': 24.10.3
+      '@types/node': 24.10.9
 
-  '@inquirer/editor@5.0.2(@types/node@24.10.3)':
+  '@inquirer/editor@5.0.2(@types/node@24.10.9)':
     dependencies:
-      '@inquirer/core': 11.0.2(@types/node@24.10.3)
-      '@inquirer/external-editor': 2.0.2(@types/node@24.10.3)
-      '@inquirer/type': 4.0.2(@types/node@24.10.3)
+      '@inquirer/core': 11.0.2(@types/node@24.10.9)
+      '@inquirer/external-editor': 2.0.2(@types/node@24.10.9)
+      '@inquirer/type': 4.0.2(@types/node@24.10.9)
     optionalDependencies:
-      '@types/node': 24.10.3
+      '@types/node': 24.10.9
 
-  '@inquirer/expand@5.0.2(@types/node@24.10.3)':
+  '@inquirer/expand@5.0.2(@types/node@24.10.9)':
     dependencies:
-      '@inquirer/core': 11.0.2(@types/node@24.10.3)
-      '@inquirer/type': 4.0.2(@types/node@24.10.3)
+      '@inquirer/core': 11.0.2(@types/node@24.10.9)
+      '@inquirer/type': 4.0.2(@types/node@24.10.9)
     optionalDependencies:
-      '@types/node': 24.10.3
+      '@types/node': 24.10.9
 
-  '@inquirer/external-editor@2.0.2(@types/node@24.10.3)':
+  '@inquirer/external-editor@2.0.2(@types/node@24.10.9)':
     dependencies:
       chardet: 2.1.1
       iconv-lite: 0.7.0
     optionalDependencies:
-      '@types/node': 24.10.3
+      '@types/node': 24.10.9
 
   '@inquirer/figures@2.0.2': {}
 
-  '@inquirer/input@5.0.2(@types/node@24.10.3)':
+  '@inquirer/input@5.0.2(@types/node@24.10.9)':
     dependencies:
-      '@inquirer/core': 11.0.2(@types/node@24.10.3)
-      '@inquirer/type': 4.0.2(@types/node@24.10.3)
+      '@inquirer/core': 11.0.2(@types/node@24.10.9)
+      '@inquirer/type': 4.0.2(@types/node@24.10.9)
     optionalDependencies:
-      '@types/node': 24.10.3
+      '@types/node': 24.10.9
 
-  '@inquirer/number@4.0.2(@types/node@24.10.3)':
+  '@inquirer/number@4.0.2(@types/node@24.10.9)':
     dependencies:
-      '@inquirer/core': 11.0.2(@types/node@24.10.3)
-      '@inquirer/type': 4.0.2(@types/node@24.10.3)
+      '@inquirer/core': 11.0.2(@types/node@24.10.9)
+      '@inquirer/type': 4.0.2(@types/node@24.10.9)
     optionalDependencies:
-      '@types/node': 24.10.3
+      '@types/node': 24.10.9
 
-  '@inquirer/password@5.0.2(@types/node@24.10.3)':
-    dependencies:
-      '@inquirer/ansi': 2.0.2
-      '@inquirer/core': 11.0.2(@types/node@24.10.3)
-      '@inquirer/type': 4.0.2(@types/node@24.10.3)
-    optionalDependencies:
-      '@types/node': 24.10.3
-
-  '@inquirer/prompts@8.0.2(@types/node@24.10.3)':
-    dependencies:
-      '@inquirer/checkbox': 5.0.2(@types/node@24.10.3)
-      '@inquirer/confirm': 6.0.2(@types/node@24.10.3)
-      '@inquirer/editor': 5.0.2(@types/node@24.10.3)
-      '@inquirer/expand': 5.0.2(@types/node@24.10.3)
-      '@inquirer/input': 5.0.2(@types/node@24.10.3)
-      '@inquirer/number': 4.0.2(@types/node@24.10.3)
-      '@inquirer/password': 5.0.2(@types/node@24.10.3)
-      '@inquirer/rawlist': 5.0.2(@types/node@24.10.3)
-      '@inquirer/search': 4.0.2(@types/node@24.10.3)
-      '@inquirer/select': 5.0.2(@types/node@24.10.3)
-    optionalDependencies:
-      '@types/node': 24.10.3
-
-  '@inquirer/rawlist@5.0.2(@types/node@24.10.3)':
-    dependencies:
-      '@inquirer/core': 11.0.2(@types/node@24.10.3)
-      '@inquirer/type': 4.0.2(@types/node@24.10.3)
-    optionalDependencies:
-      '@types/node': 24.10.3
-
-  '@inquirer/search@4.0.2(@types/node@24.10.3)':
-    dependencies:
-      '@inquirer/core': 11.0.2(@types/node@24.10.3)
-      '@inquirer/figures': 2.0.2
-      '@inquirer/type': 4.0.2(@types/node@24.10.3)
-    optionalDependencies:
-      '@types/node': 24.10.3
-
-  '@inquirer/select@5.0.2(@types/node@24.10.3)':
+  '@inquirer/password@5.0.2(@types/node@24.10.9)':
     dependencies:
       '@inquirer/ansi': 2.0.2
-      '@inquirer/core': 11.0.2(@types/node@24.10.3)
-      '@inquirer/figures': 2.0.2
-      '@inquirer/type': 4.0.2(@types/node@24.10.3)
+      '@inquirer/core': 11.0.2(@types/node@24.10.9)
+      '@inquirer/type': 4.0.2(@types/node@24.10.9)
     optionalDependencies:
-      '@types/node': 24.10.3
+      '@types/node': 24.10.9
 
-  '@inquirer/type@4.0.2(@types/node@24.10.3)':
-    optionalDependencies:
-      '@types/node': 24.10.3
-
-  '@napi-rs/canvas-android-arm64@0.1.84':
-    optional: true
-
-  '@napi-rs/canvas-darwin-arm64@0.1.84':
-    optional: true
-
-  '@napi-rs/canvas-darwin-x64@0.1.84':
-    optional: true
-
-  '@napi-rs/canvas-linux-arm-gnueabihf@0.1.84':
-    optional: true
-
-  '@napi-rs/canvas-linux-arm64-gnu@0.1.84':
-    optional: true
-
-  '@napi-rs/canvas-linux-arm64-musl@0.1.84':
-    optional: true
-
-  '@napi-rs/canvas-linux-riscv64-gnu@0.1.84':
-    optional: true
-
-  '@napi-rs/canvas-linux-x64-gnu@0.1.84':
-    optional: true
-
-  '@napi-rs/canvas-linux-x64-musl@0.1.84':
-    optional: true
-
-  '@napi-rs/canvas-win32-x64-msvc@0.1.84':
-    optional: true
-
-  '@napi-rs/canvas@0.1.84':
-    optionalDependencies:
-      '@napi-rs/canvas-android-arm64': 0.1.84
-      '@napi-rs/canvas-darwin-arm64': 0.1.84
-      '@napi-rs/canvas-darwin-x64': 0.1.84
-      '@napi-rs/canvas-linux-arm-gnueabihf': 0.1.84
-      '@napi-rs/canvas-linux-arm64-gnu': 0.1.84
-      '@napi-rs/canvas-linux-arm64-musl': 0.1.84
-      '@napi-rs/canvas-linux-riscv64-gnu': 0.1.84
-      '@napi-rs/canvas-linux-x64-gnu': 0.1.84
-      '@napi-rs/canvas-linux-x64-musl': 0.1.84
-      '@napi-rs/canvas-win32-x64-msvc': 0.1.84
-
-  '@napi-rs/cli@3.5.0(@emnapi/runtime@1.7.1)(@types/node@24.10.3)':
+  '@inquirer/prompts@8.0.2(@types/node@24.10.9)':
     dependencies:
-      '@inquirer/prompts': 8.0.2(@types/node@24.10.3)
+      '@inquirer/checkbox': 5.0.2(@types/node@24.10.9)
+      '@inquirer/confirm': 6.0.2(@types/node@24.10.9)
+      '@inquirer/editor': 5.0.2(@types/node@24.10.9)
+      '@inquirer/expand': 5.0.2(@types/node@24.10.9)
+      '@inquirer/input': 5.0.2(@types/node@24.10.9)
+      '@inquirer/number': 4.0.2(@types/node@24.10.9)
+      '@inquirer/password': 5.0.2(@types/node@24.10.9)
+      '@inquirer/rawlist': 5.0.2(@types/node@24.10.9)
+      '@inquirer/search': 4.0.2(@types/node@24.10.9)
+      '@inquirer/select': 5.0.2(@types/node@24.10.9)
+    optionalDependencies:
+      '@types/node': 24.10.9
+
+  '@inquirer/rawlist@5.0.2(@types/node@24.10.9)':
+    dependencies:
+      '@inquirer/core': 11.0.2(@types/node@24.10.9)
+      '@inquirer/type': 4.0.2(@types/node@24.10.9)
+    optionalDependencies:
+      '@types/node': 24.10.9
+
+  '@inquirer/search@4.0.2(@types/node@24.10.9)':
+    dependencies:
+      '@inquirer/core': 11.0.2(@types/node@24.10.9)
+      '@inquirer/figures': 2.0.2
+      '@inquirer/type': 4.0.2(@types/node@24.10.9)
+    optionalDependencies:
+      '@types/node': 24.10.9
+
+  '@inquirer/select@5.0.2(@types/node@24.10.9)':
+    dependencies:
+      '@inquirer/ansi': 2.0.2
+      '@inquirer/core': 11.0.2(@types/node@24.10.9)
+      '@inquirer/figures': 2.0.2
+      '@inquirer/type': 4.0.2(@types/node@24.10.9)
+    optionalDependencies:
+      '@types/node': 24.10.9
+
+  '@inquirer/type@4.0.2(@types/node@24.10.9)':
+    optionalDependencies:
+      '@types/node': 24.10.9
+
+  '@napi-rs/canvas-android-arm64@0.1.88':
+    optional: true
+
+  '@napi-rs/canvas-darwin-arm64@0.1.88':
+    optional: true
+
+  '@napi-rs/canvas-darwin-x64@0.1.88':
+    optional: true
+
+  '@napi-rs/canvas-linux-arm-gnueabihf@0.1.88':
+    optional: true
+
+  '@napi-rs/canvas-linux-arm64-gnu@0.1.88':
+    optional: true
+
+  '@napi-rs/canvas-linux-arm64-musl@0.1.88':
+    optional: true
+
+  '@napi-rs/canvas-linux-riscv64-gnu@0.1.88':
+    optional: true
+
+  '@napi-rs/canvas-linux-x64-gnu@0.1.88':
+    optional: true
+
+  '@napi-rs/canvas-linux-x64-musl@0.1.88':
+    optional: true
+
+  '@napi-rs/canvas-win32-arm64-msvc@0.1.88':
+    optional: true
+
+  '@napi-rs/canvas-win32-x64-msvc@0.1.88':
+    optional: true
+
+  '@napi-rs/canvas@0.1.88':
+    optionalDependencies:
+      '@napi-rs/canvas-android-arm64': 0.1.88
+      '@napi-rs/canvas-darwin-arm64': 0.1.88
+      '@napi-rs/canvas-darwin-x64': 0.1.88
+      '@napi-rs/canvas-linux-arm-gnueabihf': 0.1.88
+      '@napi-rs/canvas-linux-arm64-gnu': 0.1.88
+      '@napi-rs/canvas-linux-arm64-musl': 0.1.88
+      '@napi-rs/canvas-linux-riscv64-gnu': 0.1.88
+      '@napi-rs/canvas-linux-x64-gnu': 0.1.88
+      '@napi-rs/canvas-linux-x64-musl': 0.1.88
+      '@napi-rs/canvas-win32-arm64-msvc': 0.1.88
+      '@napi-rs/canvas-win32-x64-msvc': 0.1.88
+
+  '@napi-rs/cli@3.5.1(@emnapi/runtime@1.7.1)(@types/node@24.10.9)':
+    dependencies:
+      '@inquirer/prompts': 8.0.2(@types/node@24.10.9)
       '@napi-rs/cross-toolchain': 1.0.3
       '@napi-rs/wasm-tools': 1.0.1
       '@octokit/rest': 22.0.1
@@ -1137,7 +1147,7 @@ snapshots:
 
   '@napi-rs/lzma-wasm32-wasi@1.4.5':
     dependencies:
-      '@napi-rs/wasm-runtime': 1.1.0
+      '@napi-rs/wasm-runtime': 1.1.1
     optional: true
 
   '@napi-rs/lzma-win32-arm64-msvc@1.4.5':
@@ -1207,7 +1217,7 @@ snapshots:
 
   '@napi-rs/tar-wasm32-wasi@1.1.0':
     dependencies:
-      '@napi-rs/wasm-runtime': 1.1.0
+      '@napi-rs/wasm-runtime': 1.1.1
     optional: true
 
   '@napi-rs/tar-win32-arm64-msvc@1.1.0':
@@ -1238,7 +1248,7 @@ snapshots:
       '@napi-rs/tar-win32-ia32-msvc': 1.1.0
       '@napi-rs/tar-win32-x64-msvc': 1.1.0
 
-  '@napi-rs/wasm-runtime@1.1.0':
+  '@napi-rs/wasm-runtime@1.1.1':
     dependencies:
       '@emnapi/core': 1.7.1
       '@emnapi/runtime': 1.7.1
@@ -1273,7 +1283,7 @@ snapshots:
 
   '@napi-rs/wasm-tools-wasm32-wasi@1.0.1':
     dependencies:
-      '@napi-rs/wasm-runtime': 1.1.0
+      '@napi-rs/wasm-runtime': 1.1.1
     optional: true
 
   '@napi-rs/wasm-tools-win32-arm64-msvc@1.0.1':
@@ -1363,28 +1373,28 @@ snapshots:
     dependencies:
       '@octokit/openapi-types': 27.0.0
 
-  '@oxlint/darwin-arm64@1.32.0':
+  '@oxlint/darwin-arm64@1.42.0':
     optional: true
 
-  '@oxlint/darwin-x64@1.32.0':
+  '@oxlint/darwin-x64@1.42.0':
     optional: true
 
-  '@oxlint/linux-arm64-gnu@1.32.0':
+  '@oxlint/linux-arm64-gnu@1.42.0':
     optional: true
 
-  '@oxlint/linux-arm64-musl@1.32.0':
+  '@oxlint/linux-arm64-musl@1.42.0':
     optional: true
 
-  '@oxlint/linux-x64-gnu@1.32.0':
+  '@oxlint/linux-x64-gnu@1.42.0':
     optional: true
 
-  '@oxlint/linux-x64-musl@1.32.0':
+  '@oxlint/linux-x64-musl@1.42.0':
     optional: true
 
-  '@oxlint/win32-arm64@1.32.0':
+  '@oxlint/win32-arm64@1.42.0':
     optional: true
 
-  '@oxlint/win32-x64@1.32.0':
+  '@oxlint/win32-x64@1.42.0':
     optional: true
 
   '@taplo/cli@0.7.0': {}
@@ -1393,7 +1403,7 @@ snapshots:
     dependencies:
       tslib: 2.8.1
 
-  '@types/node@24.10.3':
+  '@types/node@24.10.9':
     dependencies:
       undici-types: 7.16.0
 
@@ -1470,16 +1480,16 @@ snapshots:
 
   obug@2.1.1: {}
 
-  oxlint@1.32.0:
+  oxlint@1.42.0:
     optionalDependencies:
-      '@oxlint/darwin-arm64': 1.32.0
-      '@oxlint/darwin-x64': 1.32.0
-      '@oxlint/linux-arm64-gnu': 1.32.0
-      '@oxlint/linux-arm64-musl': 1.32.0
-      '@oxlint/linux-x64-gnu': 1.32.0
-      '@oxlint/linux-x64-musl': 1.32.0
-      '@oxlint/win32-arm64': 1.32.0
-      '@oxlint/win32-x64': 1.32.0
+      '@oxlint/darwin-arm64': 1.42.0
+      '@oxlint/darwin-x64': 1.42.0
+      '@oxlint/linux-arm64-gnu': 1.42.0
+      '@oxlint/linux-arm64-musl': 1.42.0
+      '@oxlint/linux-x64-gnu': 1.42.0
+      '@oxlint/linux-x64-musl': 1.42.0
+      '@oxlint/win32-arm64': 1.42.0
+      '@oxlint/win32-x64': 1.42.0
 
   path-key@3.1.1: {}
 
@@ -1487,7 +1497,7 @@ snapshots:
 
   pidtree@0.6.0: {}
 
-  prettier@3.7.4: {}
+  prettier@3.8.1: {}
 
   read-package-json-fast@4.0.0:
     dependencies:
