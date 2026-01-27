@@ -9,6 +9,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 *Nothing yet*
 
+## [0.2.2] - 2026-01-27
+
+### Fixed
+
+- Tweaked implementation of async methods to hopefully reduce errors ([3ed00f9](https://github.com/gomander/napi-webp-animation/commit/3ed00f9fe3bc31d1fb7255667ae08933d36a7a4a))
+
 ## [0.2.1] - 2025-11-08
 
 ### Fixed
