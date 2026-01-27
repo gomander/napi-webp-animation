@@ -1,13 +1,16 @@
 name: CI
+
 env:
   DEBUG: napi:*
   APP_NAME: napi-webp-animation
   MACOSX_DEPLOYMENT_TARGET: '10.13'
   CARGO_INCREMENTAL: '1'
+
 permissions:
   contents: write
   id-token: write
-'on':
+
+on:
   push:
     branches:
       - main
@@ -21,9 +24,11 @@ permissions:
       - docs/**
       - sample/**
   pull_request: null
+
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
+
 jobs:
   lint:
     name: Lint
@@ -49,6 +54,7 @@ jobs:
         run: cargo fmt -- --check
       - name: Clippy
         run: cargo clippy
+
   build:
     strategy:
       fail-fast: false
@@ -104,6 +110,7 @@ jobs:
           name: bindings-${{ matrix.settings.target }}
           path: '*.node'
           if-no-files-found: error
+
   test-macOS-windows-binding:
     name: Test - ${{ matrix.settings.target }} - node@${{ matrix.node }}
     needs:
@@ -148,6 +155,7 @@ jobs:
         shell: bash
       - name: Test bindings
         run: pnpm test
+
   test-linux-binding:
     name: Test - ${{ matrix.settings.target }} - node@${{ matrix.node }}
     needs:
@@ -195,6 +203,7 @@ jobs:
           image: ${{ steps.docker.outputs.IMAGE }}
           options: '-v ${{ steps.docker.outputs.PNPM_STORE_PATH }}:${{ steps.docker.outputs.PNPM_STORE_PATH }} -v ${{ github.workspace }}:${{ github.workspace }} -w ${{ github.workspace }} --platform ${{ steps.docker.outputs.PLATFORM }}'
           run: npm run test
+
   publish:
     name: Publish
     runs-on: ubuntu-latest
@@ -211,6 +220,7 @@ jobs:
         with:
           node-version: 24
           cache: pnpm
+          registry-url: 'https://registry.npmjs.org'
       - name: Install dependencies
         run: pnpm install
       - name: Download all artifacts
@@ -226,18 +236,12 @@ jobs:
         shell: bash
       - name: Publish
         run: |
-          npm config set provenance true
           if git log -1 --pretty=%B | grep "^v\?[0-9]\+\.[0-9]\+\.[0-9]\+$";
           then
-            echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" >> ~/.npmrc
             npm publish --access public
           elif git log -1 --pretty=%B | grep "^v\?[0-9]\+\.[0-9]\+\.[0-9]\+";
           then
-            echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" >> ~/.npmrc
             npm publish --tag next --access public
           else
             echo "Not a release, skipping publish"
           fi
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
