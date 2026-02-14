@@ -9,7 +9,7 @@
     "build": "napi build --platform --release",
     "build:debug": "napi build --platform",
     "format": "run-p format:toml format:rs",
-    "format:prettier": "prettier . -w",
+    "format:js": "oxfmt",
     "format:toml": "taplo format",
     "format:rs": "cargo fmt",
     "lint": "oxlint",
@@ -19,14 +19,14 @@
     "version": "napi version"
   },
   "devDependencies": {
-    "@napi-rs/canvas": "~0.1.88",
+    "@napi-rs/canvas": "~0.1.92",
     "@napi-rs/cli": "^3.5.1",
     "@napi-rs/wasm-runtime": "^1.1.1",
     "@taplo/cli": "~0.7.0",
-    "@types/node": "^24.10.9",
+    "@types/node": "^24.10.13",
     "npm-run-all2": "^8.0.4",
-    "oxlint": "^1.42.0",
-    "prettier": "^3.8.1",
+    "oxfmt": "^0.32.0",
+    "oxlint": "^1.47.0",
     "typescript": "^5.9.3"
   },
   "napi": {
