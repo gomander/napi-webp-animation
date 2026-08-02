@@ -1,4 +1,4 @@
-use napi::bindgen_prelude::{AsyncTask, Buffer};
+use napi::bindgen_prelude::{AsyncTask, Buffer, Status};
 use napi::{Env, Error as NapiError, Result, Task};
 use napi_derive::napi;
 use std::io::Error as IoError;
@@ -10,14 +10,14 @@ use webp_animation::{
 #[derive(Clone)]
 struct WebpEncoderFrame {
   frame_data: Vec<u8>,
-  duration: Option<f64>,
+  duration: Option<i32>,
 }
 
 #[derive(Clone)]
 pub struct WebpEncoder {
   width: u32,
   height: u32,
-  frame_rate: u16,
+  frame_rate: i32,
   frames: Vec<WebpEncoderFrame>,
 }
 
@@ -31,11 +31,11 @@ impl WebpEncoder {
     }
   }
 
-  pub fn set_frame_rate(&mut self, frame_rate: u16) {
+  pub fn set_frame_rate(&mut self, frame_rate: i32) {
     self.frame_rate = frame_rate;
   }
 
-  pub fn add_frame(&mut self, frame_data: Vec<u8>, duration: Option<f64>) {
+  pub fn add_frame(&mut self, frame_data: Vec<u8>, duration: Option<i32>) {
     self.frames.push(WebpEncoderFrame {
       frame_data,
       duration,
@@ -46,15 +46,12 @@ impl WebpEncoder {
     let options = options.cloned().unwrap_or_default();
     let mut encoder = Encoder::new_with_options((self.width, self.height), options)
       .map_err(EncoderError::EncoderError)?;
-    let mut timestamp: i32 = 0;
+    let mut timestamp = 0;
     for frame in &self.frames {
       encoder
         .add_frame(&frame.frame_data, timestamp)
         .map_err(EncoderError::EncoderError)?;
-      timestamp += frame
-        .duration
-        .unwrap_or(1000. / (self.frame_rate as f64))
-        .max(1.0) as i32;
+      timestamp += frame.duration.unwrap_or(1000 / self.frame_rate).max(1);
     }
     Ok(
       encoder
@@ -64,18 +61,13 @@ impl WebpEncoder {
     )
   }
 
-  pub fn write_to_file(&self, path: String, options: Option<&EncoderOptions>) -> Result<Vec<u8>> {
-    let buffer = self.get_buffer(options)?;
+  pub fn write_to_file(&self, path: &str, options: Option<&EncoderOptions>) -> Result<()> {
     std::fs::write(
-      if path.ends_with(".webp") {
-        path
-      } else {
-        format!("{path}.webp")
-      },
-      &buffer,
+      std::path::Path::new(path).with_extension("webp"),
+      &self.get_buffer(options)?,
     )
     .map_err(EncoderError::WriteError)?;
-    Ok(buffer)
+    Ok(())
   }
 
   pub fn clear_frames(&mut self) {
@@ -122,17 +114,17 @@ pub struct AsyncWriteToFile {
 
 #[napi]
 impl Task for AsyncWriteToFile {
-  type Output = Vec<u8>;
-  type JsValue = Buffer;
+  type Output = ();
+  type JsValue = ();
 
   fn compute(&mut self) -> Result<Self::Output> {
     self
       .encoder
-      .write_to_file(self.path.clone(), self.options.as_ref())
+      .write_to_file(&self.path, self.options.as_ref())
   }
 
   fn resolve(&mut self, _: Env, output: Self::Output) -> Result<Self::JsValue> {
-    Ok(output.into())
+    Ok(output)
   }
 }
 
@@ -144,24 +136,44 @@ pub struct JsWebpEncoder {
 #[napi]
 impl JsWebpEncoder {
   #[napi(constructor)]
-  pub fn new(width: u32, height: u32) -> Self {
-    JsWebpEncoder {
-      encoder: WebpEncoder::new(width, height),
+  pub fn new(width: i32, height: i32) -> napi::Result<Self> {
+    if width < 1 || height < 1 {
+      return Err(NapiError::new(
+        Status::InvalidArg,
+        "width and height must be positive integers",
+      ));
     }
+    Ok(JsWebpEncoder {
+      encoder: WebpEncoder::new(width.cast_unsigned(), height.cast_unsigned()),
+    })
   }
 
   #[napi]
-  pub fn set_frame_rate(&mut self, frame_rate: u16) {
-    self.encoder.set_frame_rate(frame_rate)
+  pub fn set_frame_rate(&mut self, frame_rate: i32) -> napi::Result<()> {
+    if !(1..=1000).contains(&frame_rate) {
+      return Err(NapiError::new(
+        Status::InvalidArg,
+        "frame_rate must be an integer between 1 and 1000",
+      ));
+    }
+    self.encoder.set_frame_rate(frame_rate);
+    Ok(())
   }
 
   #[napi]
   pub fn add_frame(
     &mut self,
     frame_data: Buffer,
-    #[napi(ts_arg_type = "number")] duration: Option<f64>,
-  ) {
-    self.encoder.add_frame(frame_data.into(), duration)
+    #[napi(ts_arg_type = "number")] duration: Option<i32>,
+  ) -> napi::Result<()> {
+    if duration.is_some_and(|duration| duration < 1) {
+      return Err(NapiError::new(
+        Status::InvalidArg,
+        "duration must be a positive integer",
+      ));
+    }
+    self.encoder.add_frame(frame_data.into(), duration);
+    Ok(())
   }
 
   #[napi]
@@ -171,7 +183,7 @@ impl JsWebpEncoder {
   ) -> AsyncTask<AsyncGetBuffer> {
     AsyncTask::new(AsyncGetBuffer {
       encoder: self.encoder.clone(),
-      options: options.map(map_js_webp_encoder_options),
+      options: options.map(|opts| map_js_webp_encoder_options(&opts)),
     })
   }
 
@@ -179,11 +191,15 @@ impl JsWebpEncoder {
   pub fn get_buffer_sync(
     &self,
     #[napi(ts_arg_type = "WebpEncoderOptions")] options: Option<JsWebpEncoderOptions>,
-  ) -> Result<Buffer> {
+  ) -> napi::Result<Buffer> {
     Ok(
       self
         .encoder
-        .get_buffer(options.map(map_js_webp_encoder_options).as_ref())?
+        .get_buffer(
+          options
+            .map(|opts| map_js_webp_encoder_options(&opts))
+            .as_ref(),
+        )?
         .into(),
     )
   }
@@ -197,21 +213,22 @@ impl JsWebpEncoder {
     AsyncTask::new(AsyncWriteToFile {
       encoder: self.encoder.clone(),
       path,
-      options: options.map(map_js_webp_encoder_options),
+      options: options.map(|opts| map_js_webp_encoder_options(&opts)),
     })
   }
 
   #[napi]
+  #[allow(clippy::needless_pass_by_value)]
   pub fn write_to_file_sync(
     &self,
     path: String,
     #[napi(ts_arg_type = "WebpEncoderOptions")] options: Option<JsWebpEncoderOptions>,
-  ) -> Result<Buffer> {
-    Ok(
-      self
-        .encoder
-        .write_to_file(path, options.map(map_js_webp_encoder_options).as_ref())?
-        .into(),
+  ) -> napi::Result<()> {
+    self.encoder.write_to_file(
+      &path,
+      options
+        .map(|opts| map_js_webp_encoder_options(&opts))
+        .as_ref(),
     )
   }
 
@@ -226,7 +243,7 @@ impl JsWebpEncoder {
   }
 }
 
-fn map_js_webp_encoder_options(options: JsWebpEncoderOptions) -> EncoderOptions {
+fn map_js_webp_encoder_options(options: &JsWebpEncoderOptions) -> EncoderOptions {
   EncoderOptions {
     anim_params: AnimParams {
       loop_count: options.loop_count.unwrap_or(0),
@@ -237,7 +254,7 @@ fn map_js_webp_encoder_options(options: JsWebpEncoderOptions) -> EncoderOptions 
       } else {
         EncodingType::Lossy(LossyEncodingConfig::default())
       },
-      quality: options.quality.unwrap_or(1) as f32,
+      quality: f32::from(options.quality.unwrap_or(1)),
       ..Default::default()
     }),
     ..Default::default()

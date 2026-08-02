@@ -1,7 +1,7 @@
 // @ts-check
 
 import assert from 'node:assert'
-import fs from 'node:fs/promises'
+import fs, { readFile } from 'node:fs/promises'
 import { dirname } from 'node:path'
 import test from 'node:test'
 import { fileURLToPath } from 'node:url'
@@ -57,27 +57,43 @@ async function createEncoderWithFrames() {
 for (const encodingMode of /** @type {const} */ (['lossy', 'lossless'])) {
   for (const [quality, sizes] of Object.entries(testValues[encodingMode])) {
     for (const syncMode of /** @type {const} */ (['async', 'sync'])) {
-      const path = `test/output/${encodingMode}-${quality}-${syncMode}.webp`
-      const options = /** @type {import('../index.js').WebpEncoderOptions} */ ({
-        lossless: encodingMode === 'lossless',
-        quality: Number(quality)
-      })
-      const paddedEncodingMode = encodingMode.padStart('lossless'.length)
-      const paddedQuality = quality.padStart('100'.length)
-      const paddedSyncMode = syncMode.padStart('async'.length)
-      test(
-        `Encode | ${paddedEncodingMode} | ${paddedQuality} | ${paddedSyncMode}`,
-        async () => {
-          const encoder = await createEncoderWithFrames()
-          const data = syncMode === 'async'
-            ? await encoder.writeToFile(path, options)
-            : encoder.writeToFileSync(path, options)
-          assert.ok(
-            sizes.includes(data.byteLength),
-            `Encoded size ${data.byteLength} not in expected sizes`
-          )
-        }
-      )
+      for (const outputMode of /** @type {const} */ (['disk', 'memory'])) {
+        const path = `test/output/${encodingMode}-${quality}-${syncMode}.webp`
+        const options = /** @type {import('../index.js').WebpEncoderOptions} */ ({
+          lossless: encodingMode === 'lossless',
+          quality: Number(quality)
+        })
+        const paddedEncodingMode = encodingMode.padStart('lossless'.length)
+        const paddedQuality = quality.padStart('100'.length)
+        const paddedSyncMode = syncMode.padStart('async'.length)
+        const paddedOutputMode = outputMode.padStart('memory'.length)
+        test(
+          `Encode | ${paddedEncodingMode} | ${paddedQuality} | ${paddedSyncMode} | ${paddedOutputMode}`,
+          async () => {
+            const encoder = await createEncoderWithFrames()
+            /** @type {Buffer} */
+            let data
+            if (outputMode === 'disk') {
+              if (syncMode === 'async') {
+                await encoder.writeToFile(path, options)
+              } else {
+                encoder.writeToFileSync(path, options)
+              }
+              data = await readFile(path)
+            } else {
+              if (syncMode === 'async') {
+                data = await encoder.getBuffer(options)
+              } else {
+                data = encoder.getBufferSync(options)
+              }
+            }
+            assert.ok(
+              sizes.includes(data.byteLength),
+              `Encoded size ${data.byteLength} not in expected sizes`
+            )
+          }
+        )
+      }
     }
   }
 }
@@ -98,7 +114,9 @@ test('Decodes WebP', async () => {
     assert.strictEqual(frame.timestamp, cumulativeTimestamp)
     const encoder = new WebpEncoder(WIDTH, HEIGHT)
     encoder.addFrame(frame.data)
-    const encodedWebp = await encoder.writeToFile(`test/output/${i + 1}.webp`)
+    const path = `test/output/${i + 1}.webp`
+    await encoder.writeToFile(path)
+    const encodedWebp = await readFile(path)
     assert.ok(
       encodedWebp.byteLength > 80000 && encodedWebp.byteLength < 90000,
       `Encoded frame size ${encodedWebp.byteLength} out of expected range`

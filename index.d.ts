@@ -6,8 +6,8 @@ export declare class WebpEncoder {
   addFrame(frameData: Buffer, duration?: number): void
   getBuffer(options?: WebpEncoderOptions): Promise<Buffer>
   getBufferSync(options?: WebpEncoderOptions): Buffer
-  writeToFile(path: string, options?: WebpEncoderOptions): Promise<Buffer>
-  writeToFileSync(path: string, options?: WebpEncoderOptions): Buffer
+  writeToFile(path: string, options?: WebpEncoderOptions): Promise<void>
+  writeToFileSync(path: string, options?: WebpEncoderOptions): void
   clearFrames(): void
   setDimensions(width: number, height: number): void
 }

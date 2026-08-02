@@ -38,7 +38,7 @@ for (const frameBuffer of frameBuffers) {
 // Encode the animated WebP and get the data as a buffer!
 const data = await encoder.getBuffer()
 
-// Or write it directly to file (also returns a buffer)
+// Or write it directly to file
 await encoder.writeToFile('output.webp')
 
 // Output options can be set on `writeToFile`, `getBuffer`
