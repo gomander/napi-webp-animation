@@ -20,16 +20,16 @@
     "version": "napi version"
   },
   "devDependencies": {
-    "@napi-rs/canvas": "~0.1.97",
-    "@napi-rs/cli": "^3.6.0",
-    "@napi-rs/wasm-runtime": "^1.1.2",
+    "@napi-rs/canvas": "^1.0.3",
+    "@napi-rs/cli": "^3.8.2",
+    "@napi-rs/wasm-runtime": "^1.2.2",
     "@taplo/cli": "~0.7.0",
-    "@types/node": "^24.12.2",
+    "@types/node": "^24.13.3",
     "editorconfig": "^3.0.2",
     "npm-run-all2": "^8.0.4",
-    "oxfmt": "^0.43.0",
-    "oxlint": "^1.58.0",
-    "typescript": "^6.0.2"
+    "oxfmt": "^0.61.0",
+    "oxlint": "^1.76.0",
+    "typescript": "^7.0.2"
   },
   "napi": {
     "binaryName": "napi-webp-animation",
@@ -82,5 +82,5 @@
     "webp",
     "webp-animation"
   ],
-  "packageManager": "pnpm@10.33.0"
+  "packageManager": "pnpm@11.18.0+sha512.33d83c77da82f49fba836925c6f1b841181ec3132b670639bd012f7075f5c7cf634c5f870147c19aae7478fac01df09d8892e880454896edd23ee9b33757563c"
 }
