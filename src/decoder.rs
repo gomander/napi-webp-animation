@@ -17,15 +17,15 @@ pub struct DecodedWebp {
 }
 
 #[napi]
-pub fn decode_webp(buffer: Buffer) -> Result<DecodedWebp> {
-  match Decoder::new(&buffer) {
+pub fn decode_webp(buffer: &[u8]) -> Result<DecodedWebp> {
+  match Decoder::new(buffer) {
     Ok(decoder) => {
       let (width, height) = decoder.dimensions();
       let frames = decoder
         .into_iter()
         .map(|frame| WebpFrame {
           data: frame.data().into(),
-          timestamp: frame.timestamp() as f64,
+          timestamp: f64::from(frame.timestamp()),
         })
         .collect();
       Ok(DecodedWebp {

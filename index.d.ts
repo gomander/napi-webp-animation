@@ -19,7 +19,7 @@ export interface DecodedWebp {
   frames: Array<WebpFrame>
 }
 
-export declare function decodeWebp(buffer: Buffer): DecodedWebp
+export declare function decodeWebp(buffer: Uint8Array): DecodedWebp
 
 export interface WebpEncoderOptions {
   lossless?: boolean
