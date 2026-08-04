@@ -26,9 +26,9 @@
     "@taplo/cli": "~0.7.0",
     "@types/node": "^24.13.3",
     "editorconfig": "^3.0.2",
-    "npm-run-all2": "^8.0.4",
-    "oxfmt": "^0.61.0",
-    "oxlint": "^1.76.0",
+    "npm-run-all2": "^9.0.3",
+    "oxfmt": "^0.62.0",
+    "oxlint": "^1.77.0",
     "typescript": "^7.0.2"
   },
   "napi": {

@@ -55,12 +55,12 @@ encoder.getBufferSync()
 
 ## Support matrix
 
-|                  | Node 20 | Node 22 | Node 24 |
-| ---------------- | ------- | ------- | ------- |
-| Linux x64 gnu    | ✓       | ✓       | ✓       |
-| macOS x64        | ✓       | ✓       | ✓       |
-| macOS aarch64    | ✓       | ✓       | ✓       |
-| Windows x64      | ✓       | ✓       | ✓       |
+|               | Node 20 | Node 22 | Node 24 |
+| ------------- | ------- | ------- | ------- |
+| Linux x64 gnu | ✓       | ✓       | ✓       |
+| macOS x64     | ✓       | ✓       | ✓       |
+| macOS aarch64 | ✓       | ✓       | ✓       |
+| Windows x64   | ✓       | ✓       | ✓       |
 
 I have also tested with Deno and it works, though I have not written any automated tests for Deno.
 
