@@ -60,7 +60,7 @@
     "index.d.ts"
   ],
   "engines": {
-    "node": ">= 18"
+    "node": ">= 22"
   },
   "repository": {
     "url": "git+ssh://git@github.com/gomander/napi-webp-animation.git",
