@@ -1,7 +1,9 @@
 use napi::bindgen_prelude::{AsyncTask, Buffer, Status};
 use napi::{Env, Error as NapiError, Result, Task};
 use napi_derive::napi;
+use std::fs;
 use std::io::Error as IoError;
+use std::path::Path;
 use webp_animation::{
   AnimParams, Encoder, EncoderOptions, EncodingConfig, EncodingType, Error as WebpAnimationError,
   LossyEncodingConfig,
@@ -45,28 +47,28 @@ impl WebpEncoder {
   pub fn get_buffer(&self, options: Option<&EncoderOptions>) -> Result<Vec<u8>> {
     let options = options.cloned().unwrap_or_default();
     let mut encoder = Encoder::new_with_options((self.width, self.height), options)
-      .map_err(EncoderError::EncoderError)?;
+      .map_err(EncoderError::Encode)?;
     let mut timestamp = 0;
     for frame in &self.frames {
       encoder
         .add_frame(&frame.frame_data, timestamp)
-        .map_err(EncoderError::EncoderError)?;
+        .map_err(EncoderError::Encode)?;
       timestamp += frame.duration.unwrap_or(1000 / self.frame_rate).max(1);
     }
     Ok(
       encoder
         .finalize(timestamp)
-        .map_err(EncoderError::EncoderError)?
+        .map_err(EncoderError::Encode)?
         .to_vec(),
     )
   }
 
   pub fn write_to_file(&self, path: &str, options: Option<&EncoderOptions>) -> Result<()> {
-    std::fs::write(
-      std::path::Path::new(path).with_extension("webp"),
+    fs::write(
+      Path::new(path).with_extension("webp"),
       &self.get_buffer(options)?,
     )
-    .map_err(EncoderError::WriteError)?;
+    .map_err(EncoderError::Write)?;
     Ok(())
   }
 
@@ -136,7 +138,7 @@ pub struct JsWebpEncoder {
 #[napi]
 impl JsWebpEncoder {
   #[napi(constructor)]
-  pub fn new(width: i32, height: i32) -> napi::Result<Self> {
+  pub fn new(width: i32, height: i32) -> Result<Self> {
     if width < 1 || height < 1 {
       return Err(NapiError::new(
         Status::InvalidArg,
@@ -149,7 +151,7 @@ impl JsWebpEncoder {
   }
 
   #[napi]
-  pub fn set_frame_rate(&mut self, frame_rate: i32) -> napi::Result<()> {
+  pub fn set_frame_rate(&mut self, frame_rate: i32) -> Result<()> {
     if !(1..=1000).contains(&frame_rate) {
       return Err(NapiError::new(
         Status::InvalidArg,
@@ -165,7 +167,7 @@ impl JsWebpEncoder {
     &mut self,
     frame_data: Buffer,
     #[napi(ts_arg_type = "number")] duration: Option<i32>,
-  ) -> napi::Result<()> {
+  ) -> Result<()> {
     if duration.is_some_and(|duration| duration < 1) {
       return Err(NapiError::new(
         Status::InvalidArg,
@@ -218,7 +220,6 @@ impl JsWebpEncoder {
   }
 
   #[napi]
-  #[allow(clippy::needless_pass_by_value)]
   pub fn write_to_file_sync(
     &self,
     path: String,
@@ -264,9 +265,9 @@ fn map_js_webp_encoder_options(options: &JsWebpEncoderOptions) -> EncoderOptions
 #[derive(thiserror::Error, Debug)]
 enum EncoderError {
   #[error("WebP encoder encountered an error: {0}")]
-  EncoderError(#[from] WebpAnimationError),
+  Encode(#[from] WebpAnimationError),
   #[error("Failed to write to file: {0}")]
-  WriteError(#[from] IoError),
+  Write(#[from] IoError),
 }
 
 impl From<EncoderError> for NapiError {

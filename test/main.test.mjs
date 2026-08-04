@@ -1,6 +1,6 @@
 // @ts-check
 
-import assert from 'node:assert'
+import assert from 'node:assert/strict'
 import fs, { readFile } from 'node:fs/promises'
 import { dirname } from 'node:path'
 import test from 'node:test'
@@ -87,7 +87,7 @@ for (const encodingMode of /** @type {const} */ (['lossy', 'lossless'])) {
                 data = encoder.getBufferSync(options)
               }
             }
-            assert.ok(
+            assert(
               sizes.includes(data.byteLength),
               `Encoded size ${data.byteLength} not in expected sizes`
             )
@@ -98,26 +98,47 @@ for (const encodingMode of /** @type {const} */ (['lossy', 'lossless'])) {
   }
 }
 
+test('Saves with correct extension', async () => {
+  function getPath(/** @type {string} */ variant, /** @type {string} */ extension = '.webp') {
+    return `test/output/with-${variant}-extension${extension}`
+  }
+  const encoder = await createEncoderWithFrames()
+  encoder.writeToFileSync(getPath('normal'))
+  encoder.writeToFileSync(getPath('capitalized', '.WEBP'))
+  encoder.writeToFileSync(getPath('no', ''))
+  encoder.writeToFileSync(getPath('empty', '.'))
+  encoder.writeToFileSync(getPath('wrong', '.gif'))
+  const withExtension = await fs.readFile(getPath('normal'))
+  const withCapitalizedExtension = await fs.readFile(getPath('capitalized'))
+  const withNoExtension = await fs.readFile(getPath('no'))
+  const withEmptyExtension = await fs.readFile(getPath('empty'))
+  const withWrongExtension = await fs.readFile(getPath('wrong'))
+  assert.equal(withExtension.byteLength, withCapitalizedExtension.byteLength)
+  assert.equal(withExtension.byteLength, withNoExtension.byteLength)
+  assert.equal(withExtension.byteLength, withEmptyExtension.byteLength)
+  assert.equal(withExtension.byteLength, withWrongExtension.byteLength)
+})
+
 test('Decodes WebP', async () => {
   const buffer = await fs.readFile('test/output/lossy-75-sync.webp')
   const decodedWebp = decodeWebp(buffer)
-  assert.strictEqual(decodedWebp.width, WIDTH)
-  assert.strictEqual(decodedWebp.height, HEIGHT)
-  assert.strictEqual(decodedWebp.frames.length, FRAME_COUNT)
+  assert.equal(decodedWebp.width, WIDTH)
+  assert.equal(decodedWebp.height, HEIGHT)
+  assert.equal(decodedWebp.frames.length, FRAME_COUNT)
   const expectedFrameSize = WIDTH * HEIGHT * 4
   const duration = Math.floor(1000 / FRAME_RATE)
   let cumulativeTimestamp = 0
   for (let i = 0; i < decodedWebp.frames.length; i++) {
     const frame = decodedWebp.frames[i]
     cumulativeTimestamp += duration
-    assert.strictEqual(frame.data.length, expectedFrameSize)
-    assert.strictEqual(frame.timestamp, cumulativeTimestamp)
+    assert.equal(frame.data.length, expectedFrameSize)
+    assert.equal(frame.timestamp, cumulativeTimestamp)
     const encoder = new WebpEncoder(WIDTH, HEIGHT)
     encoder.addFrame(frame.data)
     const path = `test/output/${i + 1}.webp`
-    await encoder.writeToFile(path)
+    encoder.writeToFileSync(path)
     const encodedWebp = await readFile(path)
-    assert.ok(
+    assert(
       encodedWebp.byteLength > 80000 && encodedWebp.byteLength < 90000,
       `Encoded frame size ${encodedWebp.byteLength} out of expected range`
     )

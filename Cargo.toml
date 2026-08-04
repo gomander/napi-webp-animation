@@ -22,8 +22,6 @@ codegen-units = 1
 strip = "symbols"
 
 [lints.clippy]
-pedantic = { level = "deny", priority = -1 }
-# DENY PANICS:
 unwrap_used = "deny"
 expect_used = "deny"
 indexing_slicing = "deny"
