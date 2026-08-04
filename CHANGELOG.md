@@ -9,6 +9,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 _Nothing yet_
 
+## [0.3.0] - 2026-08-04
+
+### Changed
+
+- Improved error messages when invalid values are passed as dimensions, frame rate, or duration ([c28561a](https://github.com/gomander/napi-webp-animation/commit/c28561afae69454650250ba2fe1fa2a8260ed2bd))
+- Reduced memory usage of async methods ([0e35c14](https://github.com/gomander/napi-webp-animation/commit/0e35c140b901e4086e86319e23d67e42f8698f39))
+- Improved handling of write paths passed to `writeToFile` and `writeToFileSync` ([04a5901](https://github.com/gomander/napi-webp-animation/commit/04a590176ab65d2216b0addd6b92f3aba7917e62))
+
+### Removed
+
+- Dropped Node 20 support ([6d65f88](https://github.com/gomander/napi-webp-animation/commit/6d65f88e98151379d8452548d6e8c297c6ab055f))
+- `writeToFile` and `writeToFileSync` no longer return the Buffer on top of writing it to file ([c28561a](https://github.com/gomander/napi-webp-animation/commit/c28561afae69454650250ba2fe1fa2a8260ed2bd))
+
+
 ## [0.2.2] - 2026-01-27
 
 ### Fixed
