@@ -4,18 +4,17 @@ use napi_derive::napi;
 use std::fs;
 use std::io::Error as IoError;
 use std::path::Path;
+use std::sync::{Arc, Mutex, MutexGuard};
 use webp_animation::{
   AnimParams, Encoder, EncoderOptions, EncodingConfig, EncodingType, Error as WebpAnimationError,
   LossyEncodingConfig,
 };
 
-#[derive(Clone)]
 struct WebpEncoderFrame {
   frame_data: Vec<u8>,
   duration: Option<i32>,
 }
 
-#[derive(Clone)]
 pub struct WebpEncoder {
   width: u32,
   height: u32,
@@ -90,7 +89,7 @@ pub struct JsWebpEncoderOptions {
 }
 
 pub struct AsyncGetBuffer {
-  encoder: WebpEncoder,
+  encoder: Arc<Mutex<WebpEncoder>>,
   options: Option<EncoderOptions>,
 }
 
@@ -100,7 +99,11 @@ impl Task for AsyncGetBuffer {
   type JsValue = Buffer;
 
   fn compute(&mut self) -> Result<Self::Output> {
-    self.encoder.get_buffer(self.options.as_ref())
+    let encoder = self
+      .encoder
+      .lock()
+      .map_err(|_| NapiError::from_reason("Mutex lock failed"))?;
+    encoder.get_buffer(self.options.as_ref())
   }
 
   fn resolve(&mut self, _: Env, output: Self::Output) -> Result<Self::JsValue> {
@@ -109,7 +112,7 @@ impl Task for AsyncGetBuffer {
 }
 
 pub struct AsyncWriteToFile {
-  encoder: WebpEncoder,
+  encoder: Arc<Mutex<WebpEncoder>>,
   path: String,
   options: Option<EncoderOptions>,
 }
@@ -120,9 +123,11 @@ impl Task for AsyncWriteToFile {
   type JsValue = ();
 
   fn compute(&mut self) -> Result<Self::Output> {
-    self
+    let encoder = self
       .encoder
-      .write_to_file(&self.path, self.options.as_ref())
+      .lock()
+      .map_err(|_| NapiError::from_reason("Mutex lock failed"))?;
+    encoder.write_to_file(&self.path, self.options.as_ref())
   }
 
   fn resolve(&mut self, _: Env, output: Self::Output) -> Result<Self::JsValue> {
@@ -132,7 +137,7 @@ impl Task for AsyncWriteToFile {
 
 #[napi(js_name = "WebpEncoder")]
 pub struct JsWebpEncoder {
-  encoder: WebpEncoder,
+  encoder: Arc<Mutex<WebpEncoder>>,
 }
 
 #[napi]
@@ -146,8 +151,18 @@ impl JsWebpEncoder {
       ));
     }
     Ok(JsWebpEncoder {
-      encoder: WebpEncoder::new(width.cast_unsigned(), height.cast_unsigned()),
+      encoder: Arc::new(Mutex::new(WebpEncoder::new(
+        width.cast_unsigned(),
+        height.cast_unsigned(),
+      ))),
     })
+  }
+
+  fn lock(&self) -> Result<MutexGuard<'_, WebpEncoder>> {
+    self
+      .encoder
+      .lock()
+      .map_err(|_| NapiError::from_reason("Mutex lock failed"))
   }
 
   #[napi]
@@ -158,7 +173,8 @@ impl JsWebpEncoder {
         "frame_rate must be an integer between 1 and 1000",
       ));
     }
-    self.encoder.set_frame_rate(frame_rate);
+    let mut encoder = self.lock()?;
+    encoder.set_frame_rate(frame_rate);
     Ok(())
   }
 
@@ -174,7 +190,8 @@ impl JsWebpEncoder {
         "duration must be a positive integer",
       ));
     }
-    self.encoder.add_frame(frame_data.into(), duration);
+    let mut encoder = self.lock()?;
+    encoder.add_frame(frame_data.into(), duration);
     Ok(())
   }
 
@@ -184,7 +201,7 @@ impl JsWebpEncoder {
     #[napi(ts_arg_type = "WebpEncoderOptions")] options: Option<JsWebpEncoderOptions>,
   ) -> AsyncTask<AsyncGetBuffer> {
     AsyncTask::new(AsyncGetBuffer {
-      encoder: self.encoder.clone(),
+      encoder: Arc::clone(&self.encoder),
       options: options.map(|opts| map_js_webp_encoder_options(&opts)),
     })
   }
@@ -193,10 +210,10 @@ impl JsWebpEncoder {
   pub fn get_buffer_sync(
     &self,
     #[napi(ts_arg_type = "WebpEncoderOptions")] options: Option<JsWebpEncoderOptions>,
-  ) -> napi::Result<Buffer> {
+  ) -> Result<Buffer> {
+    let encoder = self.lock()?;
     Ok(
-      self
-        .encoder
+      encoder
         .get_buffer(
           options
             .map(|opts| map_js_webp_encoder_options(&opts))
@@ -213,7 +230,7 @@ impl JsWebpEncoder {
     #[napi(ts_arg_type = "WebpEncoderOptions")] options: Option<JsWebpEncoderOptions>,
   ) -> AsyncTask<AsyncWriteToFile> {
     AsyncTask::new(AsyncWriteToFile {
-      encoder: self.encoder.clone(),
+      encoder: Arc::clone(&self.encoder),
       path,
       options: options.map(|opts| map_js_webp_encoder_options(&opts)),
     })
@@ -224,8 +241,9 @@ impl JsWebpEncoder {
     &self,
     path: String,
     #[napi(ts_arg_type = "WebpEncoderOptions")] options: Option<JsWebpEncoderOptions>,
-  ) -> napi::Result<()> {
-    self.encoder.write_to_file(
+  ) -> Result<()> {
+    let encoder = self.lock()?;
+    encoder.write_to_file(
       &path,
       options
         .map(|opts| map_js_webp_encoder_options(&opts))
@@ -234,13 +252,23 @@ impl JsWebpEncoder {
   }
 
   #[napi]
-  pub fn clear_frames(&mut self) {
-    self.encoder.clear_frames();
+  pub fn clear_frames(&mut self) -> Result<()> {
+    let mut encoder = self.lock()?;
+    encoder.clear_frames();
+    Ok(())
   }
 
   #[napi]
-  pub fn set_dimensions(&mut self, width: u32, height: u32) {
-    self.encoder.set_dimensions(width, height);
+  pub fn set_dimensions(&mut self, width: i32, height: i32) -> Result<()> {
+    if width < 1 || height < 1 {
+      return Err(NapiError::new(
+        Status::InvalidArg,
+        "width and height must be positive integers",
+      ));
+    }
+    let mut encoder = self.lock()?;
+    encoder.set_dimensions(width as u32, height as u32);
+    Ok(())
   }
 }
 
