@@ -35,14 +35,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
-      - name: setup pnpm
+      - name: Setup PNPM
         uses: pnpm/action-setup@v6
-      - name: Setup node
+      - name: Setup Node
         uses: actions/setup-node@v7
         with:
           node-version: 24
           cache: pnpm
-      - name: Install
+      - name: Setup Rust
         uses: dtolnay/rust-toolchain@stable
         with:
           components: clippy, rustfmt
@@ -76,14 +76,14 @@ jobs:
     runs-on: ${{ matrix.settings.host }}
     steps:
       - uses: actions/checkout@v7
-      - name: setup pnpm
+      - name: Setup PNPM
         uses: pnpm/action-setup@v6
-      - name: Setup node
+      - name: Setup Node
         uses: actions/setup-node@v7
         with:
           node-version: 24
           cache: pnpm
-      - name: Install
+      - name: Setup Rust
         uses: dtolnay/rust-toolchain@stable
         with:
           toolchain: stable
@@ -134,9 +134,9 @@ jobs:
     runs-on: ${{ matrix.settings.host }}
     steps:
       - uses: actions/checkout@v7
-      - name: setup pnpm
+      - name: Setup PNPM
         uses: pnpm/action-setup@v6
-      - name: Setup node
+      - name: Setup Node
         uses: actions/setup-node@v7
         with:
           node-version: ${{ matrix.node }}
@@ -172,9 +172,9 @@ jobs:
     runs-on: ${{ matrix.settings.host }}
     steps:
       - uses: actions/checkout@v7
-      - name: setup pnpm
+      - name: Setup PNPM
         uses: pnpm/action-setup@v6
-      - name: Setup node
+      - name: Setup Node
         uses: actions/setup-node@v7
         with:
           node-version: ${{ matrix.node }}
@@ -219,7 +219,6 @@ jobs:
         with:
           node-version: 24
           cache: pnpm
-          registry-url: 'https://registry.npmjs.org'
       - name: Install dependencies
         run: pnpm install
       - name: Download all artifacts
@@ -235,12 +234,18 @@ jobs:
         shell: bash
       - name: Publish
         run: |
+          npm config set provenance true
           if git log -1 --pretty=%B | grep "^v\?[0-9]\+\.[0-9]\+\.[0-9]\+$";
           then
+            echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" >> ~/.npmrc
             npm publish --access public
           elif git log -1 --pretty=%B | grep "^v\?[0-9]\+\.[0-9]\+\.[0-9]\+";
           then
+            echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" >> ~/.npmrc
             npm publish --tag next --access public
           else
             echo "Not a release, skipping publish"
           fi
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
