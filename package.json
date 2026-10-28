@@ -20,15 +20,15 @@
     "version": "napi version"
   },
   "devDependencies": {
-    "@napi-rs/canvas": "^1.0.3",
-    "@napi-rs/cli": "^3.8.2",
-    "@napi-rs/wasm-runtime": "^1.2.2",
+    "@napi-rs/canvas": "^1.0.13",
+    "@napi-rs/cli": "^3.10.9",
+    "@napi-rs/wasm-runtime": "^1.2.6",
     "@taplo/cli": "~0.7.0",
-    "@types/node": "^24.13.3",
+    "@types/node": "^24.19.2",
     "editorconfig": "^3.0.2",
-    "npm-run-all2": "^9.0.3",
-    "oxfmt": "^0.62.0",
-    "oxlint": "^1.77.0",
+    "npm-run-all2": "^9.0.4",
+    "oxfmt": "^0.75.0",
+    "oxlint": "^1.90.0",
     "typescript": "^7.0.2"
   },
   "napi": {

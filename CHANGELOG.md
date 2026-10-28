@@ -26,7 +26,6 @@ _No significant changes_
 - Dropped Node 20 support ([6d65f88](https://github.com/gomander/napi-webp-animation/commit/6d65f88e98151379d8452548d6e8c297c6ab055f))
 - `writeToFile` and `writeToFileSync` no longer return the Buffer on top of writing it to file ([c28561a](https://github.com/gomander/napi-webp-animation/commit/c28561afae69454650250ba2fe1fa2a8260ed2bd))
 
-
 ## [0.2.2] - 2026-01-27
 
 ### Fixed
